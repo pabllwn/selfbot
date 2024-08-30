@@ -4,8 +4,7 @@
 "description": "Selfbot for Discord",
 "main": "index.js",
 "dependencies": {
-"discord.js-selfbot-v13": "^1.0.0", // تحقق من الإصدار الأخير على npm
-"express": "^4.17.1"
+"discord.js-selfbot-v13": "^1.0.0",
 },
 "scripts": {
 "start": "node index.js"
