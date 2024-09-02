@@ -1,5 +1,4 @@
-{
-  "name": "my-discord-selfbot",
+"name": "my-discord-selfbot",
   "version": "1.0.0",
   "description": "Selfbot for Discord",
   "main": "index.js",
