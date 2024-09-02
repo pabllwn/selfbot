@@ -1,4 +1,6 @@
-"name": "my-discord-selfbot",
+
+{
+  "name": "my-discord-selfbot",
   "version": "1.0.0",
   "description": "Selfbot for Discord",
   "main": "index.js",
@@ -10,6 +12,6 @@
     "express": "^4.17.1",
     "dotenv": "^10.0.0"
   },
-  "author": "Your Name",
+  "author": "pabloesc_1",
   "license": "ISC"
 }
