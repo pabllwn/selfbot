@@ -1,8 +1,3 @@
-
-let data = someFunctionThatMightReturnUndefined();
-
-if (data !== undefined && Array.isArray(data)) {
-
 const { Client } = require('discord.js-selfbot-v13');
 const mySecret = process.env['TOKEN'];
 const client = new Client();
