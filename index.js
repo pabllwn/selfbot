@@ -10,7 +10,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", message => {
    
-    const channel = client.channels.cache.get('1037831289585291264'); // chat ROB
+    const channel = client.channels.cache.get('1037831299592880209'); // chat ROB
     const channel1 = client.channels.cache.get('1047751275665698867'); // chat FIN TATl3b
     const rob = client.channels.cache.get('1037831289585291264'); //  CHAT FIN trobi
 
@@ -18,11 +18,11 @@ client.on("messageCreate", message => {
 
 
     if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!withall') &&
-        (message.author.id === "833869005500448808")) {
+        (message.author.id === "859865097510191154")) {
         flag = true;
 
         
-        channel.send('!rob 833869005500448808').then(() => console.log('Sent !rob command'));
+        channel.send('!rob 859865097510191154').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
             channel1.send('!bal').then(() => console.log('Sent !bal command'));
         }, 2000);
