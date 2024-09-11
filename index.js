@@ -1,49 +1,47 @@
-require('dotenv').config();
 const { Client } = require('discord.js-selfbot-v13');
-const mySecret = process.env['TOKEN']; // التوكن الشخصي
-
+const mySecret = process.env['TOKEN']; 
 const client = new Client();
 
 let flag = false;
 
 client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}`);
+    console.log(`Logged in as ${client.user.tag}`); 
 });
 
 client.on("messageCreate", message => {
-    console.log("Received a message");
-
-    // تحقق من معرفات القنوات الصحيحة
-    const channel = client.channels.cache.get('1037831299592880209'); // قناة ROB
-    const channel1 = client.channels.cache.get('1047751275665698867'); // قناة FIN TATl3b
-    const rob = client.channels.cache.get('1037831289585291264'); // قناة CHAT FIN trobi
+   
+    const channel = client.channels.cache.get('1037831289585291264'); // chat ROB
+    const channel1 = client.channels.cache.get('1047751275665698867'); // chat FIN TATl3b
+    const rob = client.channels.cache.get('1037831289585291264'); //  CHAT FIN trobi
 
     if (flag) return;
 
-    if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!withall') && (message.author.id === "598266878451777595")) {
-        flag = true;
-        console.log("Executing commands");
 
-        channel.send('!rob 598266878451777595').then(() => console.log('Sent !rob command'));
+    if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!withall') &&
+        (message.author.id === "833869005500448808")) {
+        flag = true;
+
+        
+        channel.send('!rob 833869005500448808').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
             channel1.send('!bal').then(() => console.log('Sent !bal command'));
-        }, 400);
+        }, 2000);
         setTimeout(() => {
             channel1.send('!buy K').then(() => console.log('Sent !buy command'));
-        }, 500);
+        }, 1500);
         setTimeout(() => {
-            channel1.send('!with 500').then(() => console.log('Sent !with 500 command'));
-        }, 800);
+            channel1.send('!dep all').then(() => console.log('Sent !with 500 command'));
+        }, 1000);
         setTimeout(() => {
-            channel1.send('!cf 100').then(() => console.log('Sent !cf 100 command'));
-        }, 900);
+            channel1.send('!with 10e6').then(() => console.log('Sent !cf 100 command'));
+        }, 9000);
         setTimeout(() => {
             channel1.send('!dep all').then(() => console.log('Sent !dep all command'));
-        }, 400);
+        }, 1200);
         setTimeout(() => {
-            rob.send('!dep all').then(() => console.log('Sent !dep all command for rob'));
-        }, 700);
+            rob.send('!dep all').then(() => console.log('Sent !dep all command  for rob'));
+        }, 1500); 
     }
-});
-
-client.login(mySecret).catch(console.error);
+}); 
+client.login(mySecret).catch(console.error); 
+                                                               
