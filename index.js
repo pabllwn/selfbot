@@ -17,12 +17,12 @@ client.on("messageCreate", message => {
     if (flag) return;
 
 
-    if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!rrstart') &&
-        (message.author.id === "758076857353502740")) {
+    if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!withall') &&
+        (message.author.id === "833869005500448808")) {
         flag = true;
 
         
-        channel.send('!rob 758076857353502740').then(() => console.log('Sent !rob command'));
+        channel.send('!rob 833869005500448808').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
             channel1.send('!bal').then(() => console.log('Sent !bal command'));
         }, 2000);
