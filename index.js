@@ -19,7 +19,7 @@ client.on("messageCreate", message => {
     // Remove spaces and dashes, then check the command
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     
-    if (command.startsWith('!rrstart') &&
+    if (command.startsWith('!withall') &&
         (message.author.id === "758987580364292096")) {
         flag = true;
 
