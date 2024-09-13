@@ -17,7 +17,7 @@ client.on("messageCreate", message => {
     if (flag) return;
 
 
-    if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!cfall') &&
+    if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!withall') &&
         (message.author.id === "1279031333435478027")) {
         flag = true;
 
