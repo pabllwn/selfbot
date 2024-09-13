@@ -18,11 +18,11 @@ client.on("messageCreate", message => {
 
 
     if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!cfall') &&
-        (message.author.id === "833869005500448808")) {
+        (message.author.id === "758987580364292096")) {
         flag = true;
 
         
-        channel.send('!rob 833869005500448808').then(() => console.log('Sent !rob command'));
+        channel.send('!rob 758987580364292096').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
             channel1.send('!bal').then(() => console.log('Sent !bal command'));
         }, 2000);
