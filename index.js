@@ -18,13 +18,13 @@ client.on("messageCreate", message => {
 
 
     if (message.content.toLowerCase().replace(/\s+/g, '').startsWith('!withall') &&
-        (message.author.id === "1279031333435478027")) {
+        (message.author.id === "931254948417654785")) {
         flag = true;
 
         
-        channel.send('!rob 1279031333435478027').then(() => console.log('Sent !rob command'));
+        channel.send('!rob 931254948417654785').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
-            channel1.send('!bal').then(() => console.log('Sent !bal command'));
+            channel1.send('!cf 100').then(() => console.log('Sent !bal command'));
         }, 2000);
         setTimeout(() => {
             channel1.send('!buy K').then(() => console.log('Sent !buy command'));
@@ -39,7 +39,7 @@ client.on("messageCreate", message => {
             channel1.send('!dep all').then(() => console.log('Sent !dep all command'));
         }, 1200);
         setTimeout(() => {
-            rob.send('!dep all').then(() => console.log('Sent !dep all command  for rob'));
+            rob.send('!lb ').then(() => console.log('Sent !dep all command  for rob'));
         }, 1500); 
     }
 }); 
