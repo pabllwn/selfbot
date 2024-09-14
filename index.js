@@ -11,8 +11,8 @@ client.on("ready", () => {
 client.on("messageCreate", message => {
    
     const channel = client.channels.cache.get('1037831299592880209'); // chat ROB
-    const channel1 = client.channels.cache.get('1037831299592880209'); // chat FIN TATl3b
-    const rob = client.channels.cache.get('1047751275665698867'); // CHAT FIN trobi
+    const channel1 = client.channels.cache.get('1037831272829034617'); // chat FIN TATl3b
+    const rob = client.channels.cache.get('1037831289585291264'); // CHAT FIN trobi
 
     if (flag) return;
 
@@ -20,15 +20,15 @@ client.on("messageCreate", message => {
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     
     if (command.startsWith('!withall') &&
-        (message.author.id === "726491894288351362")) {
+        (message.author.id === "833869005500448808")) {
         flag = true;
 
-        channel.send('!rob 726491894288351362').then(() => console.log('Sent !rob command'));
+        channel.send('!rob 833869005500448808').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
-            channel1.send('chrggg hhhh').then(() => console.log('Sent !bal command'));
-        }, 2000);
+            channel1.send('<@833869005500448808> chrggg hhhh').then(() => console.log('Sent !bal command'));
+        }, 3000);
         setTimeout(() => {
-            channel1.send('!buy K').then(() => console.log('Sent !buy command'));
+            channel1.send('!dep all').then(() => console.log('Sent !buy command'));
         }, 1500);
         setTimeout(() => {
             channel1.send('!dep all').then(() => console.log('Sent !with 500 command'));
