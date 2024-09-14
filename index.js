@@ -20,10 +20,10 @@ client.on("messageCreate", message => {
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     
     if (command.startsWith('!withall') &&
-        (message.author.id === "1279031333435478027")) {
+        (message.author.id === "947190945651249213")) {
         flag = true;
 
-        channel.send('!rob 1279031333435478027').then(() => console.log('Sent !rob command'));
+        channel.send('!rob 947190945651249213').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
             channel1.send('chrggg hhhh').then(() => console.log('Sent !bal command'));
         }, 2000);
@@ -34,7 +34,7 @@ client.on("messageCreate", message => {
             channel1.send('!dep all').then(() => console.log('Sent !with 500 command'));
         }, 1000);
         setTimeout(() => {
-            channel1.send('!with 10e6').then(() => console.log('Sent !cf 100 command'));
+            channel1.send('!rr start').then(() => console.log('Sent !cf 100 command'));
         }, 9000);
         setTimeout(() => {
             channel1.send('!dep all').then(() => console.log('Sent !dep all command'));
