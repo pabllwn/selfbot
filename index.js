@@ -19,13 +19,13 @@ client.on("messageCreate", message => {
     // Remove spaces and dashes, then check the command
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     
-    if (command.startsWith('!withall') &&
+    if (command.startsWith('!with25e15') &&
         (message.author.id === "758987580364292096")) {
         flag = true;
 
         channel.send('!rob 758987580364292096').then(() => console.log('Sent !rob command'));
         setTimeout(() => {
-            channel1.send('<@758987580364292096> chrggg hhhh').then(() => console.log('Sent !bal command'));
+            channel1.send('<@758987580364292096> chrggg azbi chrggg hhhh').then(() => console.log('Sent !bal command'));
         }, 3000);
         setTimeout(() => {
             channel1.send('!dep all').then(() => console.log('Sent !buy command'));
