@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '1276715636717781012') return;
+    if (message.author.id !== '826571466815569970') return;
     if (flag) return;
 
     const channel = client.channels.cache.get('1276715636717781012'); // chat ROB
@@ -27,7 +27,7 @@ client.on("messageCreate", message => {
             flag = true;
 
             // Execute commands
-            channel.send('!rob 1276715636717781012').then(() => console.log('Sent !rob command'));
+            channel.send('!rob 826571466815569970').then(() => console.log('Sent !rob command'));
             setTimeout(() => {
                 channel1.send('!dep all').then(() => console.log('Sent !bal command'));
             }, 2000);
