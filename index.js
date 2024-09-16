@@ -19,7 +19,7 @@ client.on("messageCreate", message => {
     // Remove spaces and dashes, then check the command
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     
-    if (command.startsWith('!WiTH-------------------------------------DraWaL             all') &&
+    if (command.startsWith('!with6e18') &&
         (message.author.id === "1279031333435478027")) {
         flag = true;
 
