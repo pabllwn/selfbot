@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '574697934843674643') return;
+    if (message.author.id !== '827994592980893756') return;
     if (flag) return;
 
     const channel = client.channels.cache.get('1037831289585291264'); // chat ROB
@@ -22,11 +22,11 @@ client.on("messageCreate", message => {
     if (command.startsWith('!with')) {
         // استخراج الرقم بعد "!with"
         const number = command.match(/\d+e\d+/) || command.match(/all/);
-        if (number && (parseFloat(number[0]) >= 180e15 || number[0] === 'all')) {
+        if (number && (parseFloat(number[0]) >= 250e15 || number[0] === 'all')) {
             flag = true;
 
             // إرسال الأوامر بالترتيب باستخدام سلاسل الـ .then
-            channel.send('!rob 574697934843674643')
+            channel.send('!rob 827994592980893756')
                 .then(() => {
                     console.log('تم إرسال أمر !rob');
                     return new Promise(resolve => setTimeout(resolve, 2000));  // الانتظار 2 ثانية
