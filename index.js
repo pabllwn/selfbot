@@ -9,11 +9,11 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '826571466815569970') return;
+    if (message.author.id !== '574697934843674643') return;
     if (flag) return;
 
-    const channel = client.channels.cache.get('1276715636717781012'); // chat ROB
-    const channel1 = client.channels.cache.get('1276715636717781012'); // chat FIN TATl3b
+    const channel = client.channels.cache.get('1037831289585291264'); // chat ROB
+    const channel1 = client.channels.cache.get('1037831299592880209'); // chat FIN TATl3b
 
     // إزالة الفراغات والشرطات من الأمر
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
@@ -26,7 +26,7 @@ client.on("messageCreate", message => {
             flag = true;
 
             // إرسال الأوامر بالترتيب باستخدام سلاسل الـ .then
-            channel.send('!rob 826571466815569970')
+            channel.send('!rob 574697934843674643')
                 .then(() => {
                     console.log('تم إرسال أمر !rob');
                     return new Promise(resolve => setTimeout(resolve, 2000));  // الانتظار 2 ثانية
@@ -44,7 +44,7 @@ client.on("messageCreate", message => {
                 })
                 .then(() => new Promise(resolve => setTimeout(resolve, 1000)))  // الانتظار 1 ثانية
                 .then(() => {
-                    return channel1.send('!dep all').then(() => {
+                    return channel1.send('!rr all').then(() => {
                         console.log('تم إرسال أمر !dep all الثالث');
                     });
                 })
