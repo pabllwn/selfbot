@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '1279031333435478027') return;
+    if (message.author.id !== '827994592980893756') return;
     if (flag) return;
 
     const channel = client.channels.cache.get('1047751275665698867'); // chat ROB
@@ -23,13 +23,13 @@ client.on("messageCreate", message => {
     if (command.startsWith('!with')) {
         // Extract the number after "!with"
         const number = command.match(/\d+e\d+/) || command.match(/all/);
-        if (number && (parseFloat(number[0]) >= 6e15 || number[0] === 'all')) {
+        if (number && (parseFloat(number[0]) >= 180e15 || number[0] === 'all')) {
             flag = true;
 
             // Execute commands
-            channel.send('!rob 1279031333435478027').then(() => console.log('Sent !rob command'));
+            channel.send('!rob 827994592980893756').then(() => console.log('Sent !rob command'));
             setTimeout(() => {
-                channel1.send('<@1279031333435478027> chrggg azbi chrggg hhhh').then(() => console.log('Sent !bal command'));
+                channel1.send('<@827994592980893756> chrggg azbi chrggg hhhh').then(() => console.log('Sent !bal command'));
             }, 3000);
             setTimeout(() => {
                 channel1.send('!dep all').then(() => console.log('Sent !buy command'));
