@@ -22,7 +22,7 @@ client.on("messageCreate", message => {
     if (command.startsWith('!with')) {
         // استخراج الرقم بعد "!with"
         const number = command.match(/\d+e\d+/) || command.match(/all/);
-        if (number && (parseFloat(number[0]) >= 250e15 || number[0] === 'all')) {
+        if (number && (parseFloat(number[0]) >= 350e15 || number[0] === 'all')) {
             flag = true;
 
             // إرسال الأوامر بالترتيب باستخدام سلاسل الـ .then
