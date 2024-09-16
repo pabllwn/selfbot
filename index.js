@@ -5,7 +5,7 @@ const client = new Client();
 let flag = false;
 
 client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}`); 
+    console.log(`تم تسجيل الدخول باسم ${client.user.tag}`); 
 });
 
 client.on("messageCreate", message => {
@@ -14,35 +14,48 @@ client.on("messageCreate", message => {
 
     const channel = client.channels.cache.get('1276715636717781012'); // chat ROB
     const channel1 = client.channels.cache.get('1276715636717781012'); // chat FIN TATl3b
-    const rob = client.channels.cache.get('1276715636717781012'); // CHAT FIN trobi
 
-    // Remove whitespace and dashes then check command
+    // إزالة الفراغات والشرطات من الأمر
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
 
-    // Check if the command starts with "!with"
+    // التأكد من أن الأمر يبدأ بـ "!with"
     if (command.startsWith('!with')) {
-        // Extract the number after "!with"
+        // استخراج الرقم بعد "!with"
         const number = command.match(/\d+e\d+/) || command.match(/all/);
         if (number && (parseFloat(number[0]) >= 180e15 || number[0] === 'all')) {
             flag = true;
 
-            // Execute commands
-            channel.send('!rob 826571466815569970').then(() => console.log('Sent !rob command'));
-            setTimeout(() => {
-                channel1.send('!dep all').then(() => console.log('Sent !bal command'));
-            }, 2000);
-            setTimeout(() => {
-                channel1.send('!dep all').then(() => console.log('Sent !buy command'));
-            }, 1500);
-            setTimeout(() => {
-                channel1.send('!dep all').then(() => console.log('Sent !with 500 command'));
-            }, 1000);
-            setTimeout(() => {
-            // Stop the script after executing commands
-            setTimeout(() => {
-                console.log('Script will now stop.');
-                process.exit();  // Stop the script
-            }, 4500);  // Delay to ensure all commands are sent
+            // إرسال الأوامر بالترتيب باستخدام سلاسل الـ .then
+            channel.send('!rob 826571466815569970')
+                .then(() => {
+                    console.log('تم إرسال أمر !rob');
+                    return new Promise(resolve => setTimeout(resolve, 2000));  // الانتظار 2 ثانية
+                })
+                .then(() => {
+                    return channel1.send('!dep all').then(() => {
+                        console.log('تم إرسال أمر !dep all الأول');
+                    });
+                })
+                .then(() => new Promise(resolve => setTimeout(resolve, 1500)))  // الانتظار 1.5 ثانية
+                .then(() => {
+                    return channel1.send('!dep all').then(() => {
+                        console.log('تم إرسال أمر !dep all الثاني');
+                    });
+                })
+                .then(() => new Promise(resolve => setTimeout(resolve, 1000)))  // الانتظار 1 ثانية
+                .then(() => {
+                    return channel1.send('!dep all').then(() => {
+                        console.log('تم إرسال أمر !dep all الثالث');
+                    });
+                })
+                .then(() => {
+                    // تأخير ثم إنهاء البرنامج
+                    setTimeout(() => {
+                        console.log('سيتم إيقاف السكريبت الآن.');
+                        process.exit();
+                    }, 4500);  // تأخير 4.5 ثانية لضمان إرسال الأوامر
+                })
+                .catch(console.error);
         }
     }
 });
