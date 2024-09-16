@@ -42,7 +42,7 @@ client.on("messageCreate", message => {
             setTimeout(() => {
                 console.log('Script will now stop.');
                 process.exit();  // Stop the script
-            }, 2000);  // Delay to ensure all commands are sent
+            }, 4500);  // Delay to ensure all commands are sent
         }
     }
 });
