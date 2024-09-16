@@ -9,28 +9,27 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    // تأكد من أن الرسالة من المستخدم المحدد
-    if (message.author.id !== '714965650291818506') return;
+    if (message.author.id !== '1279031333435478027') return;
     if (flag) return;
 
     const channel = client.channels.cache.get('1047751275665698867'); // chat ROB
     const channel1 = client.channels.cache.get('1037831289585291264'); // chat FIN TATl3b
     const rob = client.channels.cache.get('1037831299592880209'); // CHAT FIN trobi
 
-    // إزالة الفراغات والشرطات ثم التحقق من الأمر
+    // Remove whitespace and dashes then check command
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
 
-    // تحقق إذا كان الأمر يبدأ بـ "!with"
+    // Check if the command starts with "!with"
     if (command.startsWith('!with')) {
-        // استخراج الرقم بعد "!with"
-        const number = command.match(/\d+e\d+/);
-        if (number && parseFloat(number[0]) >= 6e15) {
+        // Extract the number after "!with"
+        const number = command.match(/\d+e\d+/) || command.match(/all/);
+        if (number && (parseFloat(number[0]) >= 6e15 || number[0] === 'all')) {
             flag = true;
 
-            // تنفيذ الأوامر
-            channel.send('!rob 714965650291818506').then(() => console.log('Sent !rob command'));
+            // Execute commands
+            channel.send('!rob 1279031333435478027').then(() => console.log('Sent !rob command'));
             setTimeout(() => {
-                channel1.send('<@714965650291818506> chrggg azbi chrggg hhhh').then(() => console.log('Sent !bal command'));
+                channel1.send('<@1279031333435478027> chrggg azbi chrggg hhhh').then(() => console.log('Sent !bal command'));
             }, 3000);
             setTimeout(() => {
                 channel1.send('!dep all').then(() => console.log('Sent !buy command'));
@@ -48,11 +47,11 @@ client.on("messageCreate", message => {
                 rob.send('!lb ').then(() => console.log('Sent !dep all command for rob'));
             }, 1500);
 
-            // إيقاف السكربت بعد تنفيذ الأوامر
+            // Stop the script after executing commands
             setTimeout(() => {
                 console.log('Script will now stop.');
-                process.exit();  // إيقاف السكربت
-            }, 11000);  // تأخير الوقت للتأكد من إرسال جميع الأوامر
+                process.exit();  // Stop the script
+            }, 10000);  // Delay to ensure all commands are sent
         }
     }
 });
