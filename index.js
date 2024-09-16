@@ -10,12 +10,12 @@ client.on("ready", () => {
 
 client.on("messageCreate", message => {
     // تأكد من أن الرسالة من المستخدم المحدد
-    if (message.author.id !== '758076857353502740') return;
+    if (message.author.id !== '714965650291818506') return;
     if (flag) return;
 
-    const channel = client.channels.cache.get('1276724488750370847'); // chat ROB
-    const channel1 = client.channels.cache.get('1276724488750370847'); // chat FIN TATl3b
-    const rob = client.channels.cache.get('1276724488750370847'); // CHAT FIN trobi
+    const channel = client.channels.cache.get('1047751275665698867'); // chat ROB
+    const channel1 = client.channels.cache.get('1037831289585291264'); // chat FIN TATl3b
+    const rob = client.channels.cache.get('1037831299592880209'); // CHAT FIN trobi
 
     // إزالة الفراغات والشرطات ثم التحقق من الأمر
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
@@ -28,9 +28,9 @@ client.on("messageCreate", message => {
             flag = true;
 
             // تنفيذ الأوامر
-            channel.send('!rob 758076857353502740').then(() => console.log('Sent !rob command'));
+            channel.send('!rob 714965650291818506').then(() => console.log('Sent !rob command'));
             setTimeout(() => {
-                channel1.send('<@758076857353502740> chrggg azbi chrggg hhhh').then(() => console.log('Sent !bal command'));
+                channel1.send('<@714965650291818506> chrggg azbi chrggg hhhh').then(() => console.log('Sent !bal command'));
             }, 3000);
             setTimeout(() => {
                 channel1.send('!dep all').then(() => console.log('Sent !buy command'));
