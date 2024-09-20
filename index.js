@@ -6,7 +6,6 @@ const client = new Client();
 let targetUserID = '804924780272549908';
 let targetCommand = '!with all';
 let isScriptRunning = true;
-let targetChannels = [];
 const controlChannelID = '804926311297712151';
 
 app.get('/', (req, res) => { res.send('Bot is alive!'); });
@@ -41,51 +40,31 @@ client.on("messageCreate", message => {
       message.reply(`تم تغيير ID المستهدف إلى: ${newID}`);
     }
   }
-
-  if (message.content.startsWith('!setTargetChannels')) {
-    const newChannels = message.content.split(' ').slice(1);
-    if (newChannels.length === 0) {
-      message.reply('يرجى تحديد معرفات القنوات.');
-    } else {
-      targetChannels = newChannels;
-      message.reply(`تم تعيين القنوات المستهدفة إلى: ${newChannels.join(', ')}`);
-    }
-  }
-
-  if (message.content.startsWith('!addChannel')) {
-    const newChannel = message.content.split(' ')[1];
-    if (!newChannel) {
-      message.reply('يرجى تحديد معرف صالح للقناة.');
-    } else {
-      targetChannels.push(newChannel);
-      message.reply(`تمت إضافة القناة المستهدفة: ${newChannel}`);
-    }
-  }
-
-  if (message.content.startsWith('!removeChannel')) {
-    const removeChannel = message.content.split(' ')[1];
-    if (!removeChannel) {
-      message.reply('يرجى تحديد معرف صالح للقناة.');
-    } else {
-      targetChannels = targetChannels.filter(channelID => channelID !== removeChannel);
-      message.reply(`تمت إزالة القناة المستهدفة: ${removeChannel}`);
-    }
-  }
 });
 
-client.on("messageCreate", message => {
+client.on("messageCreate", async message => {
   if (!isScriptRunning) return;
   if (message.author.id !== targetUserID) return;
   if (message.content !== targetCommand) return;
 
-  targetChannels.forEach(channelID => {
-    const channel = client.channels.cache.get(channelID);
-    if (channel) {
-      channel.send(`استجابة للكلمة المستهدفة من ${message.author.tag}: ${message.content}`);
-    } else {
-      console.log(`القناة بمعرف ${channelID} غير موجودة أو لا يمكنك الوصول إليها`);
-    }
-  });
+  // 1. إرسال الأمر !rob مع ID المستهدف بعد نصف ثانية
+  setTimeout(() => {
+    message.channel.send(`!rob ${targetUserID}`);
+  }, 500);
+
+  // 2. إرسال الأمر !dep all بعد نصف ثانية أخرى
+  setTimeout(() => {
+    message.channel.send('!dep all');
+  }, 1000);
+
+  // 3. إعلام قناة التحكم بأن الأوامر قد تم تنفيذها
+  const controlChannel = client.channels.cache.get(controlChannelID);
+  if (controlChannel) {
+    controlChannel.send('تم إرسال الأوامر بنجاح.');
+  }
+
+  // 4. إيقاف السكربت حتى يتم إرسال !startScript مرة أخرى
+  isScriptRunning = false;
 });
 
 client.login(mySecret);
