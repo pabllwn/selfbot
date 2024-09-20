@@ -7,7 +7,7 @@ let targetUserID = ''; // تبقى فارغة لتحديدها يدويًا
 let targetCommand = '!with all';
 let isScriptRunning = false; // السكربت متوقف بشكل افتراضي
 const controlChannelID = '804926311297712151'; // شات التحكم ثابت
-let commandChannelID = ''; // شات الأوامر
+const responseChannelID = '1047751275665698867'; // شات الردود ثابت
 
 app.get('/', (req, res) => { res.send('Bot is alive!'); });
 
@@ -26,11 +26,6 @@ client.on("messageCreate", message => {
       message.reply('تم تشغيل السكربت.');
     }
 
-    if (message.content === '!stop') {
-      isScriptRunning = false;
-      message.reply('تم إيقاف السكربت مؤقتًا.');
-    }
-
     if (message.content.startsWith('!id')) {
       const newID = message.content.split(' ')[1];
       if (!newID) {
@@ -40,21 +35,12 @@ client.on("messageCreate", message => {
         message.reply(`تم تغيير ID المستهدف إلى: ${newID}`);
       }
     }
-
-    if (message.content.startsWith('!ch')) {
-      commandChannelID = message.content.split(' ')[1];
-      if (!commandChannelID) {
-        message.reply('يرجى تحديد معرف صالح للقناة.');
-      } else {
-        message.reply(`تم تغيير قناة الأوامر إلى: ${commandChannelID}`);
-      }
-    }
   }
 });
 
 client.on("messageCreate", async message => {
   if (!isScriptRunning) return;
-  if (message.channel.id !== commandChannelID) return; // تنفيذ الأوامر فقط في قناة الأوامر
+  if (message.channel.id !== controlChannelID) return; // تنفيذ الأوامر فقط في قناة التحكم
   if (message.author.id !== targetUserID) return;
   if (message.content !== targetCommand) return;
 
@@ -68,10 +54,10 @@ client.on("messageCreate", async message => {
     message.channel.send('!dep all');
   }, 1000);
 
-  // 3. إعلام قناة التحكم بأن الأوامر قد تم تنفيذها
-  const controlChannel = client.channels.cache.get(controlChannelID);
-  if (controlChannel) {
-    controlChannel.send('تم إرسال الأوامر بنجاح.');
+  // 3. إعلام قناة الردود بأن الأوامر قد تم تنفيذها
+  const responseChannel = client.channels.cache.get(responseChannelID);
+  if (responseChannel) {
+    responseChannel.send('تم إرسال الأوامر بنجاح.');
   }
 
   // 4. إيقاف السكربت حتى يتم إرسال !start مرة أخرى
