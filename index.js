@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '726491894288351362') return;
+    if (message.author.id !== '1226279773534425169') return;
     if (flag) return;
 
     const channel = client.channels.cache.get('1037831299592880209'); // chat ROB
@@ -28,7 +28,7 @@ client.on("messageCreate", message => {
 
             setTimeout(() => {
                 // إرسال الأوامر بالترتيب باستخدام سلاسل الـ .then
-                channel.send('!rob 726491894288351362')
+                channel.send('!rob 1226279773534425169')
                     .then(() => {
                         console.log('تم إرسال أمر !cf all');
                         return new Promise(resolve => setTimeout(resolve, randomDelay)); // الانتظار التأخير العشوائي
