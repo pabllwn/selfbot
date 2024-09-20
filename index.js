@@ -19,24 +19,22 @@ client.on("messageCreate", message => {
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
 
     // التأكد من أن الأمر يبدأ بـ "!with"
-    if (command.startsWith('!cf')) {
-        // استخراج الرقم بعد "!with"
+    if (command.startsWith('!with')) {
         const number = command.match(/\d+e\d+/) || command.match(/all/);
         if (number && (parseFloat(number[0]) >= 199e15 || number[0] === 'all')) {
             flag = true;
 
-            // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية
-            const randomDelay = Math.floor(Math.random() * (1500 - 500 + 1)) + 500;  // تأخير عشوائي بين 0.5 و 1.5 ثانية
+            const randomDelay = Math.floor(Math.random() * (1500 - 500 + 1)) + 500; // تأخير عشوائي بين 0.5 و 1.5 ثانية
 
             setTimeout(() => {
                 // إرسال الأوامر بالترتيب باستخدام سلاسل الـ .then
-                channel.send('!dep all')
+                channel.send('!cf all')
                     .then(() => {
-                        console.log('تم إرسال أمر !rob');
-                        return new Promise(resolve => setTimeout(resolve, 2000));  // الانتظار 2 ثانية
+                        console.log('تم إرسال أمر !cf all');
+                        return new Promise(resolve => setTimeout(resolve, randomDelay)); // الانتظار التأخير العشوائي
                     })
                     .then(() => {
-                        return channel1.send('!dep all').then(() => {
+                        return channel.send('!dep all').then(() => {
                             console.log('تم إرسال أمر !dep all الأول');
                         });
                     })
@@ -51,6 +49,10 @@ client.on("messageCreate", message => {
                         return channel1.send('!').then(() => {
                             console.log('تم إرسال أمر !dep all الثالث');
                         });
-                    })
+                    });
+            }, randomDelay);
+        }
+    }
+});
 
 client.login(mySecret).catch(console.error);
