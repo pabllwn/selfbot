@@ -9,17 +9,17 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '827994592980893756') return;
+    if (message.author.id !== '804924780272549908') return;
     if (flag) return;
 
-    const channel = client.channels.cache.get('1037831289585291264'); // chat ROB
-    const channel1 = client.channels.cache.get('1037831299592880209'); // chat FIN TATl3b
+    const channel = client.channels.cache.get('1276712128505446493'); // chat ROB
+    const channel1 = client.channels.cache.get('1276712128505446493'); // chat FIN TATl3b
 
     // إزالة الفراغات والشرطات من الأمر
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
 
     // التأكد من أن الأمر يبدأ بـ "!with"
-    if (command.startsWith('!with')) {
+    if (command.startsWith('!cf')) {
         // استخراج الرقم بعد "!with"
         const number = command.match(/\d+e\d+/) || command.match(/all/);
         if (number && (parseFloat(number[0]) >= 199e15 || number[0] === 'all')) {
@@ -30,7 +30,7 @@ client.on("messageCreate", message => {
 
             setTimeout(() => {
                 // إرسال الأوامر بالترتيب باستخدام سلاسل الـ .then
-                channel.send('!rob 827994592980893756')
+                channel.send('!dep all')
                     .then(() => {
                         console.log('تم إرسال أمر !rob');
                         return new Promise(resolve => setTimeout(resolve, 2000));  // الانتظار 2 ثانية
@@ -48,7 +48,7 @@ client.on("messageCreate", message => {
                     })
                     .then(() => new Promise(resolve => setTimeout(resolve, 1000)))  // الانتظار 1 ثانية
                     .then(() => {
-                        return channel1.send('!rr all').then(() => {
+                        return channel1.send('!').then(() => {
                             console.log('تم إرسال أمر !dep all الثالث');
                         });
                     })
@@ -56,8 +56,7 @@ client.on("messageCreate", message => {
                         // تأخير ثم إنهاء البرنامج
                         setTimeout(() => {
                             console.log('سيتم إيقاف السكريبت الآن.');
-                            process.exit();
-                        }, 4500);  // تأخير 4.5 ثانية لضمان إرسال الأوامر
+                            // تأخير 4.5 ثانية لضمان إرسال الأوامر
                     })
                     .catch(console.error);
             }, randomDelay);  // التأخير العشوائي
