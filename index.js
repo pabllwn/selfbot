@@ -52,16 +52,5 @@ client.on("messageCreate", message => {
                             console.log('تم إرسال أمر !dep all الثالث');
                         });
                     })
-                    .then(() => {
-                        // تأخير ثم إنهاء البرنامج
-                        setTimeout(() => {
-                            console.log('سيتم إيقاف السكريبت الآن.');
-                            // تأخير 4.5 ثانية لضمان إرسال الأوامر
-                    })
-                    .catch(console.error);
-            }, randomDelay);  // التأخير العشوائي
-        }
-    }
-});
 
 client.login(mySecret).catch(console.error);
