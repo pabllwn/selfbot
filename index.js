@@ -1,67 +1,76 @@
 const { Client } = require('discord.js-selfbot-v13');
-const express = require('express');
-const app = express();
-const mySecret = process.env['TOKEN'];
+const mySecret = process.env['TOKEN']; 
 const client = new Client();
-let targetUserID = ''; // تبقى فارغة لتحديدها يدويًا
-let targetCommand = '!with all';
-let isScriptRunning = false; // السكربت متوقف بشكل افتراضي
-const controlChannelID = '804926311297712151'; // شات التحكم ثابت
-const responseChannelID = '1047751275665698867'; // شات الردود ثابت
 
-app.get('/', (req, res) => { res.send('Bot is alive!'); });
+let flag = false;
 
-function keepAlive() {
-  app.listen(3000, () => { console.log('Server is running on port 3000'); });
-}
-
-keepAlive();
-
-client.on("ready", () => { console.log(`تم تسجيل الدخول باسم ${client.user.tag}`); });
+client.on("ready", () => {
+    console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
+});
 
 client.on("messageCreate", message => {
-  if (message.channel.id === controlChannelID) {
-    if (message.content === '!start') {
-      isScriptRunning = true;
-      message.reply('تم تشغيل السكربت.');
-    }
+    if (message.author.id !== '804924780272549908') return;
+    if (flag) return;
 
-    if (message.content.startsWith('!id')) {
-      const newID = message.content.split(' ')[1];
-      if (!newID) {
-        message.reply('يرجى تحديد ID صالح.');
-      } else {
-        targetUserID = newID;
-        message.reply(`تم تغيير ID المستهدف إلى: ${newID}`);
-      }
+    const channel = client.channels.cache.get('1276712128505446493'); // chat ROB
+    const channel1 = client.channels.cache.get('1276712128505446493'); // chat FIN TATl3b
+
+    // إزالة الفراغات والشرطات من الأمر
+    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
+
+    // التأكد من أن الأمر يبدأ بـ "!with"
+    if (command.startsWith('!with')) {
+        const number = command.match(/\d+e\d+/) || command.match(/all/);
+
+        if (number && (parseFloat(number[0]) >= 199e15 || number[0] === 'all')) {
+            flag = true;
+
+            // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية
+            const randomDelay = Math.floor(Math.random() * (1500 - 500 + 1)) + 500; // تأخير عشوائي بين 0.5 و 1.5 ثانية
+
+            setTimeout(() => {
+                // If "all" is detected, send "!cf all" and "!dep all" in sequence
+                if (number[0] === 'all') {
+                    channel.send('!cf all')
+                        .then(() => {
+                            console.log('تم إرسال أمر !cf all');
+                            return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية
+                        })
+                        .then(() => {
+                            return channel.send('!dep all').then(() => {
+                                console.log('تم إرسال أمر !dep all');
+                            });
+                        })
+                        .catch(console.error);
+                } else {
+                    // For non-"all" numbers, send "!dep all" as usual
+                    channel.send(`!with ${number[0]}`)
+                        .then(() => {
+                            console.log(`تم إرسال أمر !with ${number[0]}`);
+                            return new Promise(resolve => setTimeout(resolve, 2000)); // الانتظار 2 ثانية
+                        })
+                        .then(() => {
+                            return channel1.send('!dep all').then(() => {
+                                console.log('تم إرسال أمر !dep all الأول');
+                            });
+                        })
+                        .then(() => new Promise(resolve => setTimeout(resolve, 1500))) // الانتظار 1.5 ثانية
+                        .then(() => {
+                            return channel1.send('!dep all').then(() => {
+                                console.log('تم إرسال أمر !dep all الثاني');
+                            });
+                        })
+                        .then(() => new Promise(resolve => setTimeout(resolve, 1000))) // الانتظار 1 ثانية
+                        .then(() => {
+                            return channel1.send('!').then(() => {
+                                console.log('تم إرسال أمر !dep all الثالث');
+                            });
+                        })
+                        .catch(console.error);
+                }
+            }, randomDelay);
+        }
     }
-  }
 });
 
-client.on("messageCreate", async message => {
-  if (!isScriptRunning) return;
-  if (message.channel.id !== controlChannelID) return; // تنفيذ الأوامر فقط في قناة التحكم
-  if (message.author.id !== targetUserID) return;
-  if (message.content !== targetCommand) return;
-
-  // 1. إرسال الأمر !rob مع ID المستهدف بعد نصف ثانية
-  setTimeout(() => {
-    message.channel.send(`!rob ${targetUserID}`);
-  }, 500);
-
-  // 2. إرسال الأمر !dep all بعد نصف ثانية أخرى
-  setTimeout(() => {
-    message.channel.send('!dep all');
-  }, 1000);
-
-  // 3. إعلام قناة الردود بأن الأوامر قد تم تنفيذها
-  const responseChannel = client.channels.cache.get(responseChannelID);
-  if (responseChannel) {
-    responseChannel.send('تم إرسال الأوامر بنجاح.');
-  }
-
-  // 4. إيقاف السكربت حتى يتم إرسال !start مرة أخرى
-  isScriptRunning = false;
-});
-
-client.login(mySecret);
+client.login(mySecret).catch(console.error);
