@@ -6,7 +6,7 @@ const client = new Client();
 const targetUsers = [
     '527881874299813903', // User 1
     '1157813247517413427', // User 2
-    '7149656502918178506'  // User 3
+    '574540758707732490'  // User 3
 ];
 
 client.on("ready", () => {
