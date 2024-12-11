@@ -18,7 +18,7 @@ client.on("messageCreate", async message => {
     if (targetUsers.includes(message.author.id)) {
         try {
             // React with the custom emoji <a:11pm_huh:1037868024914522212>
-            await message.react('<a:11pm_huh:1037868024914522212>');
+            await message.react('<:11pm_facepalm:1037867028746346536>');
             console.log(`Reacted to message from ${message.author.tag}`);
         } catch (error) {
             console.error('Failed to react:', error);
