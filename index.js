@@ -1,66 +1,30 @@
-const { Client, MessageEmbed } = require('discord.js-selfbot-v13');
-const express = require('express');
-const app = express();
-
-// متغيرات البيئة
-const mySecret = process.env['TOKEN'];
+const { Client } = require('discord.js-selfbot-v13');
+const mySecret = process.env['TOKEN']; 
 const client = new Client();
-const targetRoleId = '1037824518011494490'; // معرف الرتبة المستهدفة
-const responseMessage = 'KATL3B PES ?? DOZ NWSS333KKK TZZZ';
-const privateMessage = 'SMA7 LIYA AW9 MSG BZFF';
-const myUserId = '804924780272549908'; // ضع معرف مستخدمك هنا
 
-// متغير لتتبع المستخدمين الذين تم إرسال الرسالة لهم بالفعل
-const sentUsers = new Set();
+// List of target user IDs
+const targetUsers = [
+    '819176095492341770', // User 1
+    '742501677109870683', // User 2
+    '1226198370683715624'  // User 3
+];
 
-// إعداد keep alive
-app.get('/', (req, res) => {
-  res.send('Bot is alive!');
-});
-
-function keepAlive() {
-  app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-  });
-}
-
-keepAlive();
-
-// عند تسجيل الدخول بنجاح
 client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}`);
+    console.log(`Logged in as ${client.user.tag}`); 
 });
 
 client.on("messageCreate", async message => {
-  // التحقق من إذا كان المرسل يحمل الرتبة المحددة ولا يكون المستخدم المحدد هو أنت
-  if (message.member && message.member.roles.cache.has(targetRoleId) && message.author.id !== myUserId) {
-    // تحقق مما إذا تم إرسال الرسالة بالفعل لهذا المستخدم
-    if (sentUsers.has(message.author.id)) {
-      return; // لا تفعل شيئاً إذا تم إرسال الرسالة لهذا المستخدم بالفعل
+    // Check if the message author is one of the target users
+    if (targetUsers.includes(message.author.id)) {
+        try {
+            // React with the custom emoji <a:11pm_huh:1037868024914522212>
+            await message.react('<a:11pm_huh:1037868024914522212>');
+            console.log(`Reacted to message from ${message.author.tag}`);
+        } catch (error) {
+            console.error('Failed to react:', error);
+        }
     }
-
-    try {
-      // الرد على الرسالة في نفس القناة باستخدام إمبيد (بدون منشن)
-      const embed = new MessageEmbed()
-        .setTitle('ZOOZ')
-        .setDescription(responseMessage)
-        .setColor('#ff0000');
-
-      await message.channel.send({ embeds: [embed] });
-      console.log(`Responded to ${message.author.tag} with an embed message`);
-
-      // إرسال رسالة خاصة للمستخدم
-      await message.author.send(privateMessage);
-      console.log(`Sent private message to ${message.author.tag}`);
-
-      // إضافة المستخدم إلى القائمة لمنع الرسائل المكررة
-      sentUsers.add(message.author.id);
-
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    }
-  }
 });
 
-// تسجيل الدخول
 client.login(mySecret).catch(console.error);
+
