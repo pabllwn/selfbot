@@ -4,9 +4,10 @@ const client = new Client();
 
 // List of target user IDs
 const targetUsers = [
-    '819176095492341770', // User 1
-    '742501677109870683', // User 2
-    '1226198370683715624'  // User 3
+    '249313059238182913', // User 1
+    '804924780272549908', // User 2
+    '1226198370683715624',
+    '739960907278450853',// User 3
 ];
 
 client.on("ready", () => {
