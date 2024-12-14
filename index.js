@@ -12,22 +12,38 @@ const targetUsers = [
     '412902064952180736',
 ];
 
+// Emoji to react with
+const reactionEmoji = '<:keres:1090368386673946666>';
+
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`); 
 });
 
 client.on("messageCreate", async message => {
-    // Check if the message author is one of the target users
-    if (targetUsers.includes(message.author.id)) {
-        try {
-            // React with the custom emoji <a:11pm_huh:1037868024914522212>
-            await message.react('<:keres:1090368386673946666> ');
+    try {
+        // Check if the message author is one of the target users
+        const authorInVoiceChannel = isUserInSameVoiceChannel(message.author.id);
+        if (targetUsers.includes(message.author.id) || authorInVoiceChannel) {
+            // React with the custom emoji
+            await message.react(reactionEmoji);
             console.log(`Reacted to message from ${message.author.tag}`);
-        } catch (error) {
-            console.error('Failed to react:', error);
         }
+    } catch (error) {
+        console.error('Failed to react:', error);
     }
 });
 
-client.login(mySecret).catch(console.error);
+// Function to check if a user is in the same voice channel
+function isUserInSameVoiceChannel(userId) {
+    const guilds = client.guilds.cache;
+    for (const [guildId, guild] of guilds) {
+        const me = guild.members.cache.get(client.user.id); // Bot's member object
+        const user = guild.members.cache.get(userId); // Target user's member object
+        if (me && user && me.voice.channelId && me.voice.channelId === user.voice.channelId) {
+            return true;
+        }
+    }
+    return false;
+}
 
+client.login(mySecret).catch(console.error);
