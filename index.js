@@ -4,8 +4,8 @@ const client = new Client();
 
 // List of target user IDs
 const targetUsers = [
-    '249313059238182913', // User 1
-    '804924780272549908', // User 2
+    '768194527608438805', // User 1
+    '768194527608438805', // User 2
     '1226198370683715624',
     '803949691288027198',
     '1312405318218813592',// User 3
@@ -21,7 +21,7 @@ client.on("messageCreate", async message => {
     if (targetUsers.includes(message.author.id)) {
         try {
             // React with the custom emoji <a:11pm_huh:1037868024914522212>
-            await message.react('<:11pm_facepalm:1037867028746346536>');
+            await message.react('<:keres:1090368386673946666> ');
             console.log(`Reacted to message from ${message.author.tag}`);
         } catch (error) {
             console.error('Failed to react:', error);
