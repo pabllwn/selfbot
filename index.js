@@ -33,24 +33,24 @@ client.on("messageCreate", async message => {
         if (message.content.startsWith('+forsa')) {
             const args = message.content.split(' ');
             if (args.length < 3) {
-                return message.reply('يرجى تحديد المستخدم وعدد المرات: +forsa (user) (count)');
+                return message.reply('+forsa (user) (count)');
             }
             
             const mentionedUser = message.mentions.users.first();
             const count = parseInt(args[2], 10);
             if (!mentionedUser || isNaN(count) || count <= 0) {
-                return message.reply('صيغة الأمر خاطئة. تأكد من تحديد المستخدم وعدد المرات بشكل صحيح.');
+                return message.reply(' ...');
             }
 
             userCredits[mentionedUser.id] = count;
-            return message.reply(`تم إعطاء ${mentionedUser} ${count} فرصة/فرص.`);
+            return message.reply(`  done ${mentionedUser} ${count} `);
         }
 
         // أمر التفاعل مع المستخدم
         if (message.content.startsWith('seb hada')) {
             const mentionedUser = message.mentions.users.first();
             if (!mentionedUser) {
-                return message.reply('يرجى منشن المستخدم الذي تريد التفاعل معه.');
+                return message.reply('      tagih n7wi mo.');
             }
 
             // التحقق من وجود رصيد
@@ -60,7 +60,9 @@ client.on("messageCreate", async message => {
 
             // الرد وتخفيض الرصيد
             userCredits[message.author.id]--;
-            return message.reply(`مال مك القحبة أ ${mentionedUser}`);
+            return message.reply(` layn3el w l2a9a7ib w wlmala3ib w lmaja3ib li katsara w tatjara f charayin w l3ro9 dyal lfchlo9 lmkhno9 lmch9o9 lmro9 dyal tbon lmghbon lm3fon li ydel ydreb chifon w silisyon dyal lmtbn lmzghben lm97ben lm3fen lmklmn dyal omahat myat mok ya klb malizya ya trikt lkhera w zna w trami m7sna w sbabet mkhelta w l97ab memghta ya trikt ma9ala wadal mn t97bin w tl3bin w hzan rjlin lkhmis w tnin yatrikt lft lm7for w zab lm3bor w hzan l9lwa mn lor ya trikt l97ab w j3ab w sef 3nd lbab ytrikt l7sira w tbzira w lbota sghira ya trikt l97ob w l3ob w doran f drob w hzan zbob w srwal mt9ob wzek 3amer 7bob ya trikt l3bid w l7wa f l3id ya trik lkar ghadi w l7wa badi dserti aweld l97ba lay7re9 l7ayawan lmanawi li khseb lbwayda li kwnat janin dayl l3ro9 dyal twasel w lmfasel w lbzazel d l97bat mok l97ba
+○ghan dreb 3do rbk ya wld l9hba 7ta tabon mok i wi li kay breakdanci. Achno gelti ya wld l9hba yl3n 3do rbayb rbk ya zamel baki kat kefet 3la minecraft sir ndreb 3do rbk b minecraft shovel n3we9 zamel bok. 3awd achno gelti ya wld l9hba ya zamel ya wjah zebi ya nif l7ashara ghan 7wi tababin tabon mok yl3n mok ya zombie d zeb ya ROBLOX character choof terma, shut the 9wd up ya zamel yl3n 3do rbk ya wld l9hba daba nwekel 3do rbk lml7a o zit o ramla yl3n 3do rbk ya ras l9lwa lisriya lwalid dyalek fash 7wa mok kan wakel loz khaser darliha anal ta wlat katmcha sideways ya zamel ya lhayawan lmanawi haytek kolha 3adab ta wahd makaybghik atb9a dima hmar w retarded bhalek bhal your step dad ya zmimlat anji ndreb lik trmtak ki shi kora dyal tennis ghadi nchtet zamel bok tatchof lah kibred fl7rira,kadwi bhal l9hba ya zaml ya normie li chareb 10 dhs dlmahya ya weld l9hba layn3el steve d tbon d mamat hitler d khaltek, yalbyda , andrbek ankhli 3nik 360² ya shrik lkhanz lah yn3l tbon d jdatek lmyta ya weld l9hba,Anched l97ba dmok n3l9ha mn bzazlha taytchrgo yawld chta7a achof fya azbi tanjbed l3do rbha jdatk mn l9bor on7wiha , ydek fzebi aweld chikha trax o bak lmiloudi
+asket ya wjah zab ${mentionedUser}`);
         }
 
         // التحقق من رسائل المستخدمين المستهدفين والتفاعل معهم
