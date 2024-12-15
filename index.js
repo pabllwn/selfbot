@@ -4,19 +4,20 @@ const client = new Client();
 
 // قائمة المستخدمين المستهدفين
 const targetUsers = [
-    '765978295795187734', // User 1
-    '768194527608438805', // User 2
+    '765978295795187734', 
+    '768194527608438805',
     '1226198370683715624',
     '803949691288027198',
-    '1312405318218813592', // User 3
+    '1312405318218813592', 
     '412902064952180736',
 ];
 
 // إيموجي للتفاعل
 const reactionEmoji = '<:keres:1090368386673946666>';
 
-// تخزين عدد الاستخدامات المسموح بها
+// تخزين عدد الاستخدامات المسموح بها والسجل الزمني
 const userCredits = {};
+const userMessageLog = {};
 
 // عند تشغيل البوت
 client.on("ready", () => {
@@ -39,22 +40,31 @@ client.on("messageCreate", async message => {
             const mentionedUser = message.mentions.users.first();
             const count = parseInt(args[2], 10);
             if (!mentionedUser || isNaN(count) || count <= 0) {
-                return message.reply(' ...');
+                return message.reply('dir ch7al bghiti t3tih');
             }
 
             userCredits[mentionedUser.id] = count;
-            return message.reply(`  done ${mentionedUser} ${count} `);
+            return message.reply(`Assigned ${count} chances to ${mentionedUser.tag}`);
         }
 
         // أمر التفاعل مع المستخدم
         if (message.content.startsWith('seb hada')) {
             const mentionedUser = message.mentions.users.first();
             if (!mentionedUser) {
-                return message.reply('      tagih n7wi mo.');
+                return message.reply('tagih liya.');
             }
 
             // التحقق من وجود رصيد
             if (!userCredits[message.author.id] || userCredits[message.author.id] <= 0) {
+                const lastRequestTime = userMessageLog[message.author.id];
+                const currentTime = Date.now();
+
+                // التحقق من إرسال الرسالة مرتين خلال 5 دقائق
+                if (lastRequestTime && currentTime - lastRequestTime < 5 * 60 * 1000) {
+                    return;
+                }
+
+                userMessageLog[message.author.id] = currentTime;
                 return message.reply('khleessni w mre7ba (100 credits)');
             }
 
