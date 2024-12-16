@@ -15,8 +15,7 @@ const targetUsers = [
 // إيموجي للتفاعل
 const reactionEmoji = '<:keres:1090368386673946666>';
 
-// تخزين عدد الاستخدامات المسموح بها والسجل الزمني
-const userCredits = {};
+// تخزين السجل الزمني
 const userMessageLog = {};
 
 // عند تشغيل البوت
@@ -30,27 +29,6 @@ client.on("messageCreate", async message => {
         // تجاهل الرسائل من البوت نفسه
         if (message.author.id === client.user.id) return;
 
-        // أوامر الإدارة لتحديد عدد المرات
-        if (message.content.startsWith('+forsa')) {
-            if (message.author.id !== '804924780272549908') {
-                return message.reply('هذا الأمر غير متاح لك.');
-            }
-            
-            const args = message.content.split(' ');
-            if (args.length < 3) {
-                return message.reply('+forsa (user) (count)');
-            }
-
-            const mentionedUser = message.mentions.users.first();
-            const count = parseInt(args[2], 10);
-            if (!mentionedUser || isNaN(count) || count <= 0) {
-                return message.reply('dir ch7al bghiti t3tih');
-            }
-
-            userCredits[mentionedUser.id] = count;
-            return message.reply(`Assigned ${count} chances to ${mentionedUser.tag}`);
-        }
-
         // أمر التفاعل مع المستخدم
         if (message.content.startsWith('seb hada')) {
             const mentionedUser = message.mentions.users.first();
@@ -58,23 +36,17 @@ client.on("messageCreate", async message => {
                 return message.reply('tagih liya.');
             }
 
-            // التحقق من وجود رصيد
-            if (!userCredits[message.author.id] || userCredits[message.author.id] <= 0) {
-                const lastRequestTime = userMessageLog[message.author.id];
-                const currentTime = Date.now();
+            // التحقق من الوقت الفاصل بين الاستخدامات
+            const lastRequestTime = userMessageLog[message.author.id];
+            const currentTime = Date.now();
 
-                // التحقق من إرسال الرسالة مرتين خلال 5 دقائق
-                if (lastRequestTime && currentTime - lastRequestTime < 5 * 60 * 1000) {
-                    return;
-                }
-
-                userMessageLog[message.author.id] = currentTime;
-                return message.reply('khleessni w mre7ba (100 credits)');
+            if (lastRequestTime && currentTime - lastRequestTime < 10 * 60 * 1000) {
+                return message.reply('SKT CHWIYA ASAHBI');
             }
 
-            // الرد وتخفيض الرصيد
-            userCredits[message.author.id]--;
-            return message.reply(` layn3el w l2a9a7ib w wlmala3ib w lmaja3ib li katsara w tatjara f charayin w l3ro9 dyal lfchlo9 lmkhno9 lmch9o9 lmro9 dyal tbon lmghbon lm3fon li ydel ydreb chifon w silisyon dyal lmtbn lmzghben lm97ben lm3fen lmklmn dyal omahat myat mok ya klb malizya ya trikt lkhera w zna w trami m7sna w sbabet mkhelta w l97ab memghta w l3bid w doran f drob ya ${mentionedUser}`);
+            // تحديث السجل الزمني والرد
+            userMessageLog[message.author.id] = currentTime;
+            return message.reply(`layn3el w l2a9a7ib w wlmala3ib w lmaja3ib li katsara w tatjara f charayin w l3ro9 dyal lfchlo9 lmkhno9 lmch9o9 lmro9 dyal tbon lmghbon lm3fon li ydel ydreb chifon w silisyon dyal lmtbn lmzghben lm97ben lm3fen lmklmn dyal omahat myat mok ya klb malizya ya trikt lkhera w zna w trami m7sna w sbabet mkhelta w l97ab memghta w l3bid w doran f drob ya ${mentionedUser}`);
         }
 
         // التحقق من رسائل المستخدمين المستهدفين والتفاعل معهم
