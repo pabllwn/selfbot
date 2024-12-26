@@ -13,7 +13,7 @@ const targetUsers = [
 ];
 
 // إيموجي للتفاعل
-const reactionEmoji = '<:keres:1090368386673946666>';
+const reactionEmoji = '<:11pm_mute:1037861993333391360>';
 
 // تخزين السجل الزمني
 const userMessageLog = {};
