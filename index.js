@@ -22,7 +22,7 @@ client.on("messageCreate", message => {
     if (command.startsWith('!with')) {  
         const number = command.match(/\d+e\d+/) || command.match(/all/);  
 
-        if (number && (parseFloat(number[0]) >= 1e12 || number[0] === 'all')) {  
+        if (number && (parseFloat(number[0]) >= 2e12 || number[0] === 'all')) {  
             flag = true;  
 
             // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية  
