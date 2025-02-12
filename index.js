@@ -1,61 +1,74 @@
 const { Client } = require('discord.js-selfbot-v13');
-const mySecret = process.env['TOKEN']; 
+const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-// معرف القناة المستهدفة
-const watchedChannel = '1322901860754919474'; // ضع معرف القناة هنا
+let flag = false;
 
-// كائن لتخزين ارتباط الرسائل
-const messageMap = {};
-
-// عند تشغيل البوت
 client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
 });
 
-// التعامل مع الرسائل
-client.on("messageCreate", async (message) => {
-    // تجاهل الرسائل من البوت نفسه
-    if (message.author.id === client.user.id) return;
+client.on("messageCreate", message => {
+    if (message.author.id !== '759033185324498998') return; // أغلق السطر الناقص
+    if (flag) return;
 
-    // التحقق من القناة المحددة
-    if (message.channel.id === watchedChannel) {
-        let sentMessage;
+    const channel = client.channels.cache.get('1328057861590220841'); // chat ROB  
+    const channel1 = client.channels.cache.get('1328057993085976659'); // chat FIN TATl3b  
 
-        // إذا كانت الرسالة تحتوي على منشن لك
-        if (message.mentions.has(client.user)) {
-            const mentionedUser = message.author; // الشخص الذي عمل منشن
-            const messageContent = message.content.replace(`<@${client.user.id}>`, `<@${mentionedUser.id}>`); // استبدال المنشن بعكسه
+    // إزالة الفراغات والشرطات من الأمر  
+    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');  
 
-            // إعادة كتابة الرسالة مع عكس المنشن
-            sentMessage = await message.channel.send(messageContent).catch(console.error);
-        } else {
-            // إعادة كتابة الرسالة كما هي
-            sentMessage = await message.channel.send(message.content).catch(console.error);
-        }
+    // التأكد من أن الأمر يبدأ بـ "!with"  
+    if (command.startsWith('!with')) {  
+        const number = command.match(/\d+e\d+/) || command.match(/all/);  
 
-        // تخزين معرف الرسالة الأصلية ومعرف الرسالة التي أرسلها البوت
-        if (sentMessage) {
-            messageMap[message.id] = sentMessage.id;
-        }
+        if (number && (parseFloat(number[0]) >= 10e12 || number[0] === 'all')) {  
+            flag = true;  
+
+            // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية  
+            const randomDelay = Math.floor(Math.random() * (1500 - 500 + 1)) + 500;  
+
+            setTimeout(() => {  
+                if (number[0] === 'all') {  
+                    channel.send('!dep all')  
+                        .then(() => {  
+                            console.log('تم إرسال أمر !cf all');  
+                            return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية  
+                        })  
+                        .then(() => {  
+                            return channel.send('!dep all').then(() => {  
+                                console.log('تم إرسال أمر !dep all');  
+                            });  
+                        })  
+                        .catch(console.error);  
+                } else {  
+                    channel.send(`!with ${number[0]}`)  
+                        .then(() => {  
+                            console.log(`تم إرسال أمر !with ${number[0]}`);  
+                            return new Promise(resolve => setTimeout(resolve, 2000)); // الانتظار 2 ثانية  
+                        })  
+                        .then(() => {  
+                            return channel1.send('!dep all').then(() => {  
+                                console.log('تم إرسال أمر !dep all الأول');  
+                            });  
+                        })  
+                        .then(() => new Promise(resolve => setTimeout(resolve, 1500))) // الانتظار 1.5 ثانية  
+                        .then(() => {  
+                            return channel1.send('!dep all').then(() => {  
+                                console.log('تم إرسال أمر !dep all الثاني');  
+                            });  
+                        })  
+                        .then(() => new Promise(resolve => setTimeout(resolve, 1000))) // الانتظار 1 ثانية  
+                        .then(() => {  
+                            return channel1.send('!').then(() => {  
+                                console.log('تم إرسال أمر !dep all الثالث');  
+                            });  
+                        })  
+                        .catch(console.error);  
+                }  
+            }, randomDelay);  
+        }  
     }
 });
 
-// التعامل مع حذف الرسائل
-client.on("messageDelete", (message) => {
-    // التحقق إذا كانت الرسالة المحذوفة موجودة في الرسائل المخزنة
-    if (messageMap[message.id]) {
-        const botMessageId = messageMap[message.id]; // الحصول على معرف الرسالة التي أرسلها البوت
-
-        // محاولة حذف رسالة البوت المرتبطة
-        message.channel.messages.fetch(botMessageId).then((botMessage) => {
-            botMessage.delete().catch(console.error);
-        }).catch(console.error);
-
-        // إزالة الرسالة من الكائن
-        delete messageMap[message.id];
-    }
-});
-
-// تسجيل الدخول
 client.login(mySecret).catch(console.error);
