@@ -9,11 +9,11 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '804924780272549908') return; // أغلق السطر الناقص
+    if (message.author.id !== '676921926337167370') return; // أغلق السطر الناقص
     if (flag) return;
 
-    const channel = client.channels.cache.get('1131285199884398613'); // chat ROB  
-    const channel1 = client.channels.cache.get('1131285199884398613'); // chat FIN TATl3b  
+    const channel = client.channels.cache.get('1328057993085976659'); // chat ROB  
+    const channel1 = client.channels.cache.get('1328057861590220841'); // chat FIN TATl3b  
 
     // إزالة الفراغات والشرطات من الأمر  
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');  
@@ -30,7 +30,7 @@ client.on("messageCreate", message => {
 
             setTimeout(() => {  
                 if (number[0] === 'all') {  
-                    channel.send('!rob 804924780272549908')  
+                    channel.send('!rob 676921926337167370')  
                         .then(() => {  
                             console.log('تم إرسال أمر rob');  
                             return new Promise(resolve => setTimeout(resolve, 600)); // الانتظار 1 ثانية  
