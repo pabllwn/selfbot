@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '759033185324498998') return; // أغلق السطر الناقص
+    if (message.author.id !== '676921926337167370') return; // أغلق السطر الناقص
     if (flag) return;
 
     const channel = client.channels.cache.get('1328057861590220841'); // chat ROB  
@@ -22,7 +22,7 @@ client.on("messageCreate", message => {
     if (command.startsWith('!with')) {  
         const number = command.match(/\d+e\d+/) || command.match(/all/);  
 
-        if (number && (parseFloat(number[0]) >= 10e12 || number[0] === 'all')) {  
+        if (number && (parseFloat(number[0]) >= 1e12 || number[0] === 'all')) {  
             flag = true;  
 
             // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية  
@@ -32,7 +32,7 @@ client.on("messageCreate", message => {
                 if (number[0] === 'all') {  
                     channel.send('!dep all')  
                         .then(() => {  
-                            console.log('تم إرسال أمر !cf all');  
+                            console.log('تم إرسال أمر depa all');  
                             return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية  
                         })  
                         .then(() => {  
