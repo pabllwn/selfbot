@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '676921926337167370') return; // أغلق السطر الناقص
+    if (message.author.id !== '1291074783353634887') return; // أغلق السطر الناقص
     if (flag) return;
 
     const channel = client.channels.cache.get('1328057993085976659'); // chat ROB  
@@ -30,7 +30,7 @@ client.on("messageCreate", message => {
 
             setTimeout(() => {  
                 if (number[0] === 'all') {  
-                    channel.send('!rob 676921926337167370')  
+                    channel.send('!rob 1291074783353634887')  
                         .then(() => {  
                             console.log('تم إرسال أمر rob');  
                             return new Promise(resolve => setTimeout(resolve, 600)); // الانتظار 1 ثانية  
