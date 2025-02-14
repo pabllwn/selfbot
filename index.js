@@ -3,7 +3,7 @@ const mySecret = process.env['TOKEN'];
 const client = new Client({ checkUpdate: false });
 
 let executed = false; // علم لتحديد إذا تم تنفيذ الأمر مرة واحدة
-const defaultNumber = "10e12"; // الرقم الافتراضي الذي يمكن تغييره بسهولة
+const defaultNumber = "30e12"; // الرقم الافتراضي الذي يمكن تغييره بسهولة
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
