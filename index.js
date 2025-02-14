@@ -3,14 +3,14 @@ const mySecret = process.env['TOKEN'];
 const client = new Client({ checkUpdate: false });
 
 let executed = false; // علم لتحديد إذا تم تنفيذ الأمر مرة واحدة
-const defaultNumber = "30e12"; // الرقم الافتراضي الذي يمكن تغييره بسهولة
+const defaultNumber = "10e12"; // الرقم الافتراضي الذي يمكن تغييره بسهولة
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '1033897838716928060') return; // التأكد أن المرسل هو المستخدم المحدد
+    if (message.author.id !== '1329835932878245939') return; // التأكد أن المرسل هو المستخدم المحدد
     if (executed) return; // التحقق من عدم تنفيذ الأمر مسبقًا
 
     const channel = client.channels.cache.get('1328057993085976659'); // chat ROB  
@@ -31,7 +31,7 @@ client.on("messageCreate", message => {
 
             // التحقق إذا كان الرقم >= الرقم الافتراضي أو إذا كانت القيمة "all"
             if (parsedNumber >= Number(defaultNumber) || inputNumber === "all") {
-                channel.send('!rob 1291074783353634887')
+                channel.send('!rob 1329835932878245939')
                     .then(() => {
                         console.log('تم إرسال أمر rob');
                         return channel.send('!dep all');
