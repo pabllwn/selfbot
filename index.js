@@ -2,11 +2,11 @@ const { Client } = require('discord.js-selfbot-v13');
 const mySecret = process.env['TOKEN'];
 const client = new Client({ checkUpdate: false });
 
-const targetUsers = ['1329835932878245939', '757369584050503741']; // الأيديّات المستهدفة
+const targetUsers = ['1329835932878245939', '804924780272549908']; // الأيديّات المستهدفة
 const targetChannels = {
-    rob: '1328057993085976659', // شات !rob
-    dep1: '1328057861590220841', // الشات الأول لـ !dep all
-    dep2: '1339298478182105088', // الشات الثاني لـ !dep all
+    rob: '1131285199884398613', // شات !rob
+    dep1: '1131285199884398613', // الشات الأول لـ !dep all
+    dep2: '1131285199884398613', // الشات الثاني لـ !dep all
 };
 const minAmount = 600e12; // الرقم الأدنى المقبول
 let executed = false; // منع إعادة التنفيذ
