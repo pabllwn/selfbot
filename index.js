@@ -1,80 +1,72 @@
-const { Client } = require('discord.js-selfbot-v13');
-const mySecret = process.env['TOKEN'];
-const client = new Client({ checkUpdate: false });
+const { Client } = require('discord.js-selfbot-v13'); const mySecret = process.env['TOKEN']; const client = new Client({ checkUpdate: false });
 
-let executed = false; 
-const defaultNumber = "10e12"; // الحد الأدنى المسموح
-const targetIds = ['804924780272549908', '1329835932818245939']; // إضافة اثنين من المعرفات المستهدفة
+const targetIDs = ['1329835932878245939', '1291074783353634887']; // استبدل ID1 و ID2 بالأيدي المستهدفة
 
-client.on("ready", () => {
-    console.log(`Your account name: ${client.user.tag}`);
-});
+const chat1 = '1339298478182105088'; const chat2 = '1328057993085976659'; const chat3 = '1328057861590220841';
 
-client.on("messageCreate", message => {
-    if (executed) return; // منع التكرار
+const requiredNumber = "20e12";
 
-    // إذا لم يكن المستخدم أحد المعرفات المستهدفة، لا يتم الرد
-    if (!targetIds.includes(message.author.id)) return;
+let executed = false; // علم لمنع التنفيذ المتكرر
 
-    const channel = client.channels.cache.get('1131285199884398613'); // ROB  
-    const channel1 = client.channels.cache.get('1249202035186991216'); // FIN  
+client.on("ready", () => { console.log(تم تسجيل الدخول باسم ${client.user.tag}); });
 
-    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
+client.on("messageCreate", message => { if (executed) return; // إذا تم التنفيذ مسبقًا، تجاهل
 
-    // إذا كان الأمر هو !with
-    if (command.startsWith('!with')) {
-        // التحقق من الرقم أو "all"
-        const numberMatch = command.match(/^\!with (\d+e\d+|all)$/); // يقبل فقط صيغة الأسس أو all
+// التحقق من أن المرسل أحد الأيدي المستهدفة
+if (!targetIDs.includes(message.author.id)) return;
 
-        if (numberMatch) {
-            const input = numberMatch[1];
-            
-            // إذا كان الرقم هو "all"، يتم إرسال !dep all مباشرة
-            if (input === 'all') {
-                executed = true;
-                channel.send('!rob ' + message.author.id)  // إرسال !rob مع معرف المرسل
-                    .then(() => {
-                        console.log('تم إرسال الأمر !rob');
-                        return channel.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('تم إرسال الأمر !dep all');
-                    })
-                    .catch(console.error)
-                    .finally(() => {
-                        client.destroy(); // إيقاف البوت
-                        console.log('تم إيقاف البوت.');
-                    });
-                return;
-            }
+// إزالة الفراغات وتحويل الأمر إلى حروف صغيرة
+const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
 
-            // إذا كان الرقم أكبر من أو يساوي 5e12
-            const parsedNumber = parseFloat(input); // تحويل الرقم من صيغة الأسس إلى قيمة عددية
-            const minNumber = parseFloat(defaultNumber); // تحويل الحد الأدنى للرقم
+// التأكد من أن الأمر يبدأ بـ "!with"
+if (command.startsWith('!with')) {
+    const numberMatch = command.match(/^!with\s*(\d+e\d+|\d{13,}|all)$/); // التحقق من الرقم أو "all"
 
-            executed = true;
+    if (numberMatch) {
+        const inputNumber = numberMatch[1];
+        const parsedNumber = inputNumber === 'all' ? Number.MAX_SAFE_INTEGER : (inputNumber.includes('e') ? Number(inputNumber) : parseInt(inputNumber, 10));
 
-            if (parsedNumber >= minNumber) {
-                channel.send(`!rob ${message.author.id}`)  // إرسال !rob مع معرف المرسل
-                    .then(() => {
-                        console.log(`تم إرسال الأمر !rob ${message.author.id}`);
-                        return channel.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('تم إرسال الأمر !dep all');
-                    })
-                    .catch(console.error)
-                    .finally(() => {
-                        client.destroy(); // إيقاف البوت
-                        console.log('تم إيقاف البوت.');
-                    });
-            } else {
-                console.log(`⚠️ الرقم المدخل (${input}) أقل من الحد المسموح به (${defaultNumber}).`);
-            }
+        if (parsedNumber >= Number(requiredNumber)) {
+            executed = true; // منع التنفيذ مرة أخرى
+
+            // تحديد الشات للرد بـ !rob
+            const robChannel = message.channel.id === chat1 ? chat2 : chat1;
+
+            // إرسال الأوامر
+            client.channels.cache.get(robChannel).send(`!rob ${message.author.id}`)
+                .then(() => {
+                    console.log(`تم إرسال أمر !rob إلى الشات ${robChannel}`);
+                    return client.channels.cache.get(chat1).send('!dep all');
+                })
+                .then(() => {
+                    console.log('تم إرسال أمر !dep all الأول في الشات 1');
+                    return new Promise(resolve => setTimeout(resolve, 1000)); // انتظار 1 ثانية
+                })
+                .then(() => {
+                    return client.channels.cache.get(chat2).send('!dep all');
+                })
+                .then(() => {
+                    console.log('تم إرسال أمر !dep all الثاني في الشات 2');
+                    return new Promise(resolve => setTimeout(resolve, 2000)); // انتظار 2 ثانية
+                })
+                .then(() => {
+                    return client.channels.cache.get(chat3).send('!dep all');
+                })
+                .then(() => {
+                    console.log('تم إرسال أمر !dep all الثالث في الشات 3');
+                    client.destroy(); // إيقاف البوت
+                    console.log('تم إيقاف البوت.');
+                })
+                .catch(console.error);
         } else {
-            console.log('صيغة الرقم غير صحيحة. استخدم صيغة مثل 5e12 أو all.');
+            console.log(`الرقم أقل من ${requiredNumber}. تم تجاهل الأمر.`);
         }
+    } else {
+        console.log('الأمر غير صحيح: يجب إدخال رقم بصيغة صحيحة أو "all".');
     }
+}
+
 });
 
 client.login(mySecret).catch(console.error);
+
