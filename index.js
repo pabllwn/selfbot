@@ -4,7 +4,7 @@ const client = new Client({ checkUpdate: false });
 
 let executed = false; 
 const defaultNumber = "10e12"; // الحد الأدنى المسموح
-const targetIds = ['1291074783353634887', '1329835932878245939']; // إضافة اثنين من المعرفات المستهدفة
+const targetIds = ['804924780272549908', '1329835932818245939']; // إضافة اثنين من المعرفات المستهدفة
 
 client.on("ready", () => {
     console.log(`Your account name: ${client.user.tag}`);
@@ -16,8 +16,8 @@ client.on("messageCreate", message => {
     // إذا لم يكن المستخدم أحد المعرفات المستهدفة، لا يتم الرد
     if (!targetIds.includes(message.author.id)) return;
 
-    const channel = client.channels.cache.get('1328057993085976659'); // ROB  
-    const channel1 = client.channels.cache.get('1328057861590220841'); // FIN  
+    const channel = client.channels.cache.get('1131285199884398613'); // ROB  
+    const channel1 = client.channels.cache.get('1249202035186991216'); // FIN  
 
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
 
