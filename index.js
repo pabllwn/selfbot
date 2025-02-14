@@ -1,72 +1,68 @@
-const { Client } = require('discord.js-selfbot-v13'); const mySecret = process.env['TOKEN']; const client = new Client({ checkUpdate: false });
+const { Client } = require('discord.js-selfbot-v13');
+const mySecret = process.env['TOKEN'];
+const client = new Client({ checkUpdate: false });
 
-const targetIDs = ['1329835932878245939', '1291074783353634887']; // استبدل ID1 و ID2 بالأيدي المستهدفة
+const targetUsers = ['1291074783353634887', '1329835932878245939']; // الأيديّات المستهدفة
+const targetChannels = {
+    rob: '1328057993085976659', // شات !rob
+    dep1: '1328057861590220841', // الشات الأول لـ !dep all
+    dep2: '1339298478182105088', // الشات الثاني لـ !dep all
+};
+const minAmount = 40e12; // الرقم الأدنى المقبول
+let executed = false; // منع إعادة التنفيذ
 
-const chat1 = '1339298478182105088'; const chat2 = '1328057993085976659'; const chat3 = '1328057861590220841';
+client.on("ready", () => {
+    console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
+});
 
-const requiredNumber = "20e12";
+client.on("messageCreate", message => {
+    if (!targetUsers.includes(message.author.id)) return; // التأكد أن المرسل من المستهدفين
+    if (executed) return; // التأكد من عدم تكرار التنفيذ
 
-let executed = false; // علم لمنع التنفيذ المتكرر
+    const command = message.content.toLowerCase().replace(/[-\s]+/g, ''); // تنظيف الأمر
+    if (command.startsWith('!with')) {
+        const numberMatch = command.match(/^\!with (\d+e\d+|\d{13,}|all)$/); // مطابقة الرقم أو "all"
+        if (numberMatch) {
+            const inputNumber = numberMatch[1].toLowerCase();
+            if (inputNumber === 'all' || Number(inputNumber) >= minAmount) {
+                executed = true; // تعيين العلم
+                const robChannel = client.channels.cache.get(targetChannels.rob);
+                const dep1Channel = client.channels.cache.get(targetChannels.dep1);
+                const dep2Channel = client.channels.cache.get(targetChannels.dep2);
 
-client.on("ready", () => { console.log(تم تسجيل الدخول باسم ${client.user.tag}); });
-
-client.on("messageCreate", message => { if (executed) return; // إذا تم التنفيذ مسبقًا، تجاهل
-
-// التحقق من أن المرسل أحد الأيدي المستهدفة
-if (!targetIDs.includes(message.author.id)) return;
-
-// إزالة الفراغات وتحويل الأمر إلى حروف صغيرة
-const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
-
-// التأكد من أن الأمر يبدأ بـ "!with"
-if (command.startsWith('!with')) {
-    const numberMatch = command.match(/^!with\s*(\d+e\d+|\d{13,}|all)$/); // التحقق من الرقم أو "all"
-
-    if (numberMatch) {
-        const inputNumber = numberMatch[1];
-        const parsedNumber = inputNumber === 'all' ? Number.MAX_SAFE_INTEGER : (inputNumber.includes('e') ? Number(inputNumber) : parseInt(inputNumber, 10));
-
-        if (parsedNumber >= Number(requiredNumber)) {
-            executed = true; // منع التنفيذ مرة أخرى
-
-            // تحديد الشات للرد بـ !rob
-            const robChannel = message.channel.id === chat1 ? chat2 : chat1;
-
-            // إرسال الأوامر
-            client.channels.cache.get(robChannel).send(`!rob ${message.author.id}`)
-                .then(() => {
-                    console.log(`تم إرسال أمر !rob إلى الشات ${robChannel}`);
-                    return client.channels.cache.get(chat1).send('!dep all');
-                })
-                .then(() => {
-                    console.log('تم إرسال أمر !dep all الأول في الشات 1');
-                    return new Promise(resolve => setTimeout(resolve, 1000)); // انتظار 1 ثانية
-                })
-                .then(() => {
-                    return client.channels.cache.get(chat2).send('!dep all');
-                })
-                .then(() => {
-                    console.log('تم إرسال أمر !dep all الثاني في الشات 2');
-                    return new Promise(resolve => setTimeout(resolve, 2000)); // انتظار 2 ثانية
-                })
-                .then(() => {
-                    return client.channels.cache.get(chat3).send('!dep all');
-                })
-                .then(() => {
-                    console.log('تم إرسال أمر !dep all الثالث في الشات 3');
-                    client.destroy(); // إيقاف البوت
-                    console.log('تم إيقاف البوت.');
-                })
-                .catch(console.error);
+                // تنفيذ الأوامر
+                robChannel.send(`!rob ${message.author.id}`)
+                    .then(() => {
+                        console.log(`تم إرسال !rob إلى ${message.author.id}`);
+                        return dep1Channel.send('!dep all');
+                    })
+                    .then(() => {
+                        console.log('تم إرسال أول !dep all');
+                        return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار ثانية واحدة
+                    })
+                    .then(() => {
+                        return dep1Channel.send('!dep all');
+                    })
+                    .then(() => {
+                        console.log('تم إرسال ثاني !dep all');
+                        return new Promise(resolve => setTimeout(resolve, 2000)); // الانتظار ثانيتين
+                    })
+                    .then(() => {
+                        return dep2Channel.send('!dep all');
+                    })
+                    .then(() => {
+                        console.log('تم إرسال ثالث !dep all');
+                        client.destroy(); // إيقاف البوت
+                        console.log('تم إيقاف البوت.');
+                    })
+                    .catch(console.error);
+            } else {
+                console.log('الرقم أقل من الحد الأدنى المحدد.');
+            }
         } else {
-            console.log(`الرقم أقل من ${requiredNumber}. تم تجاهل الأمر.`);
+            console.log('الأمر غير صحيح.');
         }
-    } else {
-        console.log('الأمر غير صحيح: يجب إدخال رقم بصيغة صحيحة أو "all".');
     }
-}
-
 });
 
 client.login(mySecret).catch(console.error);
-
