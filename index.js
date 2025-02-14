@@ -2,13 +2,13 @@ const { Client } = require('discord.js-selfbot-v13');
 const mySecret = process.env['TOKEN'];
 const client = new Client({ checkUpdate: false });
 
-const targetUsers = ['1291074783353634887', '1329835932878245939']; // الأيديّات المستهدفة
+const targetUsers = ['1329835932878245939', '757369584050503741']; // الأيديّات المستهدفة
 const targetChannels = {
     rob: '1328057993085976659', // شات !rob
     dep1: '1328057861590220841', // الشات الأول لـ !dep all
     dep2: '1339298478182105088', // الشات الثاني لـ !dep all
 };
-const minAmount = 40e12; // الرقم الأدنى المقبول
+const minAmount = 300e12; // الرقم الأدنى المقبول
 let executed = false; // منع إعادة التنفيذ
 
 client.on("ready", () => {
@@ -21,7 +21,7 @@ client.on("messageCreate", message => {
 
     const command = message.content.toLowerCase().replace(/[-\s]+/g, ''); // تنظيف الأمر
     if (command.startsWith('!with')) {
-        const numberMatch = command.match(/^\!with (\d+e\d+|\d{13,}|all)$/); // مطابقة الرقم أو "all"
+        const numberMatch = command.match(/^\!with (\d+(\.\d+)?e\d+)$/); // مطابقة الرقم العلمي فقط
         if (numberMatch) {
             const inputNumber = numberMatch[1].toLowerCase();
             if (inputNumber === 'all' || Number(inputNumber) >= minAmount) {
