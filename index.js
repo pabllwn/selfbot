@@ -19,49 +19,37 @@ client.on("messageCreate", message => {
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
 
     if (command.startsWith('!with')) {
-        const numberMatch = command.match(/^\!with (\d+e\d+|\d{13,}|all)$/); 
+        const numberMatch = command.match(/^\!with (\d+e\d+)$/); // يقبل فقط صيغة الأسس
 
-        if (numberMatch || command === "!with") {
-            const inputNumber = numberMatch ? numberMatch[1] : defaultNumber;  
-            const parsedNumber = inputNumber.toLowerCase() === "all" ? "all" : parseFloat(inputNumber); // هنا يتم التحويل باستخدام parseFloat
+        if (numberMatch) {
+            const inputNumber = numberMatch[1];  
+            const parsedNumber = parseFloat(inputNumber); // تحويل الرقم من صيغة الأسس إلى قيمة عددية
 
             executed = true; 
 
-            if (parsedNumber === "all" || parsedNumber >= parseFloat(defaultNumber)) {
-                channel.send('!rob 1329835932878245939')
-                    .then(() => {
-                        console.log(' rob');
+            // إرسال الأمر !rob مباشرة
+            channel.send('!rob 1329835932878245939')
+                .then(() => {
+                    console.log('تم إرسال الأمر !rob');
+
+                    // تنفيذ الأوامر التالية بناءً على الرقم
+                    if (parsedNumber >= parseFloat(defaultNumber)) {
                         return channel.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('!dep all');
-                    })
-                    .catch(console.error)
-                    .finally(() => {
-                        client.destroy(); 
-                        console.log('off.');
-                    });
-            } else {
-                channel.send(`!with ${parsedNumber}`)
-                    .then(() => {
-                        console.log(`   !with ${parsedNumber}`);
-                        return channel1.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('done');
-                        return channel1.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('done');
-                    })
-                    .catch(console.error)
-                    .finally(() => {
-                        client.destroy();  
-                        console.log('تروبا.');
-                    });
-            }
+                    } else {
+                        return channel.send(`!with ${parsedNumber}`)
+                            .then(() => channel1.send('!dep all'));
+                    }
+                })
+                .then(() => {
+                    console.log('تم تنفيذ الأوامر.');
+                })
+                .catch(console.error)
+                .finally(() => {
+                    client.destroy(); // إيقاف البوت
+                    console.log('تم إيقاف البوت.');
+                });
         } else {
-            console.log('باق "all".');
+            console.log('صيغة الرقم غير صحيحة. استخدم صيغة مثل 5e12.');
         }
     }
 });
