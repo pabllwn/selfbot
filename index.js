@@ -3,7 +3,7 @@ const mySecret = process.env['TOKEN'];
 const client = new Client({ checkUpdate: false });
 
 let executed = false; 
-const defaultNumber = "5e12"; // الرقم الافتراضي
+const defaultNumber = "10e12"; // الرقم الافتراضي
 
 client.on("ready", () => {
     console.log(`your name acc ${client.user.tag}`);
