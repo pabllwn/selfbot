@@ -1,72 +1,77 @@
 const { Client } = require('discord.js-selfbot-v13');
-const mySecret = process.env['TOKEN'];
-const client = new Client({ checkUpdate: false });
+const mySecret = process.env['TOKEN']; 
+const client = new Client();
 
-const targetUsers = ['1329835932878245939', '804924780272549908']; // الأيديّات المستهدفة
-const targetChannels = {
-    rob: '1131285199884398613', // شات !rob
-    dep1: '1131285199884398613', // الشات الأول لـ !dep all
-    dep2: '1131285199884398613', // الشات الثاني لـ !dep all
-};
-const minAmount = 600e12; // الرقم الأدنى المقبول
-let executed = false; // منع إعادة التنفيذ
+let flag = false;
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
 });
 
 client.on("messageCreate", message => {
-    if (!targetUsers.includes(message.author.id)) return; // التأكد أن المرسل من المستهدفين
-    if (executed) return; // التأكد من عدم تكرار التنفيذ
+    if (message.author.id !== '1100522406281490463') return;
+    if (flag) return;
 
-    const command = message.content.toLowerCase().replace(/[-\s]+/g, ''); // تنظيف الأمر
+    const channel = client.channels.cache.get('1328057861590220841'); // chat ROB
+    const channel1 = client.channels.cache.get('1339298478182105088'); // chat FIN TATl3b
+
+    // إزالة الفراغات والشرطات من الأمر
+    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
+
+    // التأكد من أن الأمر يبدأ بـ "!with"
     if (command.startsWith('!with')) {
-        // التحقق من الأمر إذا كان يحتوي على "all" أو رقم علمي
-        const numberMatch = command.match(/^\!with (all|\d+(\.\d+)?e\d+)$/);
+        const number = command.match(/\d+e\d+/) || command.match(/all/);
 
-        if (numberMatch) {
-            const inputNumber = numberMatch[1].toLowerCase();
+        if (number && (parseFloat(number[0]) >= 600e15 || number[0] === 'all')) {
+            flag = true;
 
-            // مقارنة الأرقام العلمية بشكل دقيق
-            if (inputNumber === 'all' || parseFloat(inputNumber) >= minAmount) {
-                executed = true; // تعيين العلم
-                const robChannel = client.channels.cache.get(targetChannels.rob);
-                const dep1Channel = client.channels.cache.get(targetChannels.dep1);
-                const dep2Channel = client.channels.cache.get(targetChannels.dep2);
+            // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية
+            const randomDelay = Math.floor(Math.random() * (1500 - 500 + 1)) + 500; // تأخير عشوائي بين 0.5 و 1.5 ثانية
 
-                // تنفيذ الأوامر
-                robChannel.send(`!rob ${message.author.id}`)
-                    .then(() => {
-                        console.log(`تم إرسال !rob إلى ${message.author.id}`);
-                        return dep1Channel.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('تم إرسال أول !dep all');
-                        return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار ثانية واحدة
-                    })
-                    .then(() => {
-                        return dep1Channel.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('تم إرسال ثاني !dep all');
-                        return new Promise(resolve => setTimeout(resolve, 2000)); // الانتظار ثانيتين
-                    })
-                    .then(() => {
-                        return dep2Channel.send('!dep all');
-                    })
-                    .then(() => {
-                        console.log('تم إرسال ثالث !dep all');
-                        client.destroy(); // إيقاف البوت
-                        console.log('تم إيقاف البوت.');
-                    })
-                    .catch(console.error);
-            } else {
-                console.log('الرقم أقل من الحد الأدنى المحدد.');
-            }
-        } else {
-            console.log('الأمر غير صحيح.');
+            setTimeout(() => {
+                // If "all" is detected, send "!cf all" and "!dep all" in sequence
+                if (number[0] === 'all') {
+                    channel.send('!rob 1100522406281490463')
+                        .then(() => {
+                            console.log('تم إرسال أمر !cf all');
+                            return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية
+                        })
+                        .then(() => {
+                            return channel.send('!dep all').then(() => {
+                                console.log('تم إرسال أمر !dep all');
+                            });
+                        })
+                        .catch(console.error);
+                } else {
+                    // For non-"all" numbers, send "!dep all" as usual
+                    channel.send(`!Dep All`)
+                        .then(() => {
+                            console.log(`تم إرسال أمر !with ${number[0]}`);
+                            return new Promise(resolve => setTimeout(resolve, 2000)); // الانتظار 2 ثانية
+                        })
+                        .then(() => {
+                            return channel1.send('!dep all').then(() => {
+                                console.log('تم إرسال أمر !dep all الأول');
+                            });
+                        })
+                        .then(() => new Promise(resolve => setTimeout(resolve, 1500))) // الانتظار 1.5 ثانية
+                        .then(() => {
+                            return channel1.send('!buy k').then(() => {
+                                console.log('تم إرسال أمر !dep all الثاني');
+                            });
+                        })
+                        .then(() => new Promise(resolve => setTimeout(resolve, 1000))) // الانتظار 1 ثانية
+                        .then(() => {
+                            return channel1.send('!with 5e6').then(() => {
+                                console.log('تم إرسال أمر !dep all الثالث');
+                            });
+                        })
+                        .catch(console.error);
+                }
+            }, randomDelay);
         }
     }
 });
 
 client.login(mySecret).catch(console.error);
+
