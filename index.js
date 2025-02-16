@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '1206569684485283862') return; // التأكد من المستخدم المصرح له
+    if (message.author.id !== '1204050958494076989') return; // التأكد من المستخدم المصرح له
     if (flag) return; // منع التكرار أثناء التنفيذ
 
     const channel = client.channels.cache.get('1339298478182105088'); // chat ROB
@@ -24,7 +24,7 @@ client.on("messageCreate", message => {
 
         if (number) {
             const isAll = number[0] === 'all'; // التحقق إذا كان "all"
-            const isAboveLimit = !isAll && parseFloat(number[0]) >= 5e21; // التحقق إذا كان الرقم أكبر من 600e15
+            const isAboveLimit = !isAll && parseFloat(number[0]) >= 30e21; // التحقق إذا كان الرقم أكبر من 600e15
 
             if (isAll || isAboveLimit) {
                 flag = true;
@@ -34,7 +34,7 @@ client.on("messageCreate", message => {
 
                 setTimeout(() => {
                     // إرسال الأمر !rob دائمًا إذا تطابق الشرط
-                    channel.send('!rob 1206569684485283862')
+                    channel.send('!rob 1204050958494076989')
                         .then(() => {
                             console.log('تم إرسال أمر !rob');
                             return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية
