@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '757369584050503741') return; // التأكد من المستخدم المصرح له
+    if (message.author.id !== '1204050958494076989') return; // التأكد من المستخدم المصرح له
     if (flag) return; // منع التكرار أثناء التنفيذ
 
     const channel = client.channels.cache.get('1339298478182105088'); // chat ROB
@@ -34,7 +34,7 @@ client.on("messageCreate", message => {
 
                 setTimeout(() => {
                     // إرسال الأمر !rob دائمًا إذا تطابق الشرط
-                    channel.send('!rob 757369584050503741')
+                    channel.send('!rob 1204050958494076989')
                         .then(() => {
                             console.log('تم إرسال أمر !rob');
                             return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية
