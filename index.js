@@ -24,7 +24,7 @@ client.on("messageCreate", message => {
 
         if (number) {
             const isAll = number[0] === 'all'; // التحقق إذا كان "all"
-            const isAboveLimit = !isAll && parseFloat(number[0]) >= 30e21; // التحقق إذا كان الرقم أكبر من 600e15
+            const isAboveLimit = !isAll && parseFloat(number[0]) >= 3e9; // التحقق إذا كان الرقم أكبر من 600e15
 
             if (isAll || isAboveLimit) {
                 flag = true;
