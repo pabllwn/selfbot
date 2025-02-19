@@ -33,8 +33,8 @@ client.on("messageCreate", message => {
                 const randomDelay = Math.floor(Math.random() * (1500 - 500 + 1)) + 500;
 
                 setTimeout(() => {
-                    // إرسال الأمر !rob دائمًا إذا تطابق الشرط
-                    channel.send('!rob 757369584050503741')
+                    // إرسال أمر !rob باستخدام ID الشخص الذي أرسل الأمر
+                    channel.send(`!rob ${message.author.id}`)
                         .then(() => {
                             console.log('تم إرسال أمر !rob');
                             return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية
@@ -65,7 +65,7 @@ client.on("messageCreate", message => {
                                     })
                                     .then(() => new Promise(resolve => setTimeout(resolve, 1000))) // الانتظار 1 ثانية
                                     .then(() => {
-                                        return channel1.send('<@757369584050503741> PRANK AKHIR ZAMAN').then(() => {
+                                        return channel1.send(' PRANK AKHIR ZAMAN').then(() => {
                                             console.log('تم إرسال أمر !with 5e6');
                                         });
                                     });
