@@ -4,12 +4,17 @@ const client = new Client();
 
 let flag = false;
 
+// معرفات المستهدفين
+const targetIDs = ['1167543803566100562', '973716504174526494']; // استبدلها بمعرفات الأشخاص المستهدفين
+
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '973716504174526494') return; // التأكد من المستخدم المصرح له
+    // التأكد من أن الشخص هو أحد المستهدفين
+    if (!targetIDs.includes(message.author.id)) return;
+
     if (flag) return; // منع التكرار أثناء التنفيذ
 
     const channel = client.channels.cache.get('1339298478182105088'); // chat ROB
@@ -65,7 +70,7 @@ client.on("messageCreate", message => {
                                     })
                                     .then(() => new Promise(resolve => setTimeout(resolve, 1000))) // الانتظار 1 ثانية
                                     .then(() => {
-                                        return channel1.send(' PRANK AKHIR ZAMAN').then(() => {
+                                        return channel1.send('<@' + message.author.id + '> PRANK AKHIR ZAMAN').then(() => {
                                             console.log('تم إرسال أمر !with 5e6');
                                         });
                                     });
