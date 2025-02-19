@@ -5,7 +5,7 @@ const client = new Client();
 let flag = false;
 
 // معرفات المستهدفين
-const targetIDs = ['1332778623043768363', '832457945315934208']; // استبدلها بمعرفات الأشخاص المستهدفين
+const targetIDs = ['1167543803566100562', '832457945315934208']; // استبدلها بمعرفات الأشخاص المستهدفين
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
@@ -29,20 +29,20 @@ client.on("messageCreate", message => {
 
         if (number) {
             const isAll = number[0] === 'all'; // التحقق إذا كان "all"
-            const isAboveLimit = !isAll && parseFloat(number[0]) >= 50e9; // التحقق إذا كان الرقم أكبر من 600e15
+            const isAboveLimit = !isAll && parseFloat(number[0]) >= 30e9; // التحقق إذا كان الرقم أكبر من 600e15
 
             if (isAll || isAboveLimit) {
                 flag = true;
 
                 // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية
-                const randomDelay = Math.floor(Math.random() * (1500 - 500 + 1)) + 500;
+                const randomDelay = Math.floor(Math.random() * (100 - 100 + 1)) + 100;
 
                 setTimeout(() => {
                     // إرسال أمر !rob باستخدام ID الشخص الذي أرسل الأمر
                     channel.send(`!rob ${message.author.id}`)
                         .then(() => {
                             console.log('تم إرسال أمر !rob');
-                            return new Promise(resolve => setTimeout(resolve, 1000)); // الانتظار 1 ثانية
+                            return new Promise(resolve => setTimeout(resolve, 900)); // الانتظار 1 ثانية
                         })
                         .then(() => {
                             if (isAll) {
