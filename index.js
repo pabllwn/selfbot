@@ -9,7 +9,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", message => {
-    if (message.author.id !== '1167543803566100562') return; // التأكد من المستخدم المصرح له
+    if (message.author.id !== '973716504174526494') return; // التأكد من المستخدم المصرح له
     if (flag) return; // منع التكرار أثناء التنفيذ
 
     const channel = client.channels.cache.get('1339298478182105088'); // chat ROB
