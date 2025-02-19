@@ -5,7 +5,7 @@ const client = new Client();
 let flag = false;
 
 // معرفات المستهدفين
-const targetIDs = ['', '1167543803566100562']; // استبدلها بمعرفات الأشخاص المستهدفين
+const targetIDs = ['1204050958494076989', '1332778623043768363']; // استبدلها بمعرفات الأشخاص المستهدفين
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
