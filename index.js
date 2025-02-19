@@ -5,7 +5,7 @@ const client = new Client();
 let flag = false;
 
 // معرفات المستهدفين
-const targetIDs = ['832457945315934208', '1204050958494076989']; // استبدلها بمعرفات الأشخاص المستهدفين
+const targetIDs = ['1332778623043768363', '832457945315934208']; // استبدلها بمعرفات الأشخاص المستهدفين
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
@@ -29,7 +29,7 @@ client.on("messageCreate", message => {
 
         if (number) {
             const isAll = number[0] === 'all'; // التحقق إذا كان "all"
-            const isAboveLimit = !isAll && parseFloat(number[0]) >= 30e9; // التحقق إذا كان الرقم أكبر من 600e15
+            const isAboveLimit = !isAll && parseFloat(number[0]) >= 50e9; // التحقق إذا كان الرقم أكبر من 600e15
 
             if (isAll || isAboveLimit) {
                 flag = true;
