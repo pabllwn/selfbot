@@ -5,7 +5,7 @@ const client = new Client();
 let flag = false;
 
 // معرفات المستهدفين
-const targetIDs = ['1167543803566100562', '832457945315934208']; // استبدلها بمعرفات الأشخاص المستهدفين
+const targetIDs = ['1167543803566100562', '758987580364292096']; // استبدلها بمعرفات الأشخاص المستهدفين
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
@@ -35,7 +35,7 @@ client.on("messageCreate", message => {
                 flag = true;
 
                 // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية
-                const randomDelay = Math.floor(Math.random() * (100 - 100 + 1)) + 100;
+                const randomDelay = Math.floor(Math.random() * (50 - 100 + 1)) + 100;
 
                 setTimeout(() => {
                     // إرسال أمر !rob باستخدام ID الشخص الذي أرسل الأمر
