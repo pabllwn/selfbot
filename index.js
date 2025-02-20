@@ -5,7 +5,7 @@ const client = new Client();
 let flag = false;
 
 // معرفات المستهدفين
-const targetIDs = ['1311441062698418186', '298090231708647425', '1167543803566100562']; // استبدلها بمعرفات الأشخاص المستهدفين
+const targetIDs = ['1311441062698418186', '298090231708647425', '']; // استبدلها بمعرفات الأشخاص المستهدفين
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
@@ -17,7 +17,7 @@ client.on("messageCreate", message => {
 
     if (flag) return; // منع التكرار أثناء التنفيذ
 
-    const channel = client.channels.cache.get('1339298478182105088'); // chat ROB
+    const channel = client.channels.cache.get('1328057993085976659'); // chat ROB
     const channel1 = client.channels.cache.get('1328057861590220841'); // chat FIN TATl3b
 
     // إزالة الفراغات والشرطات من الأمر
@@ -42,7 +42,7 @@ client.on("messageCreate", message => {
                     channel.send(`!rob ${message.author.id}`)
                         .then(() => {
                             console.log('تم إرسال أمر !rob');
-                            return new Promise(resolve => setTimeout(resolve, 900)); // الانتظار 1 ثانية
+                            return new Promise(resolve => setTimeout(resolve, 300)); // الانتظار 1 ثانية
                         })
                         .then(() => {
                             if (isAll) {
