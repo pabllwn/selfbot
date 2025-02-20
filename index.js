@@ -5,7 +5,7 @@ const client = new Client();
 let flag = false;
 
 // معرفات المستهدفين
-const targetIDs = ['1332778623043768363', '1180334828189659232']; // استبدلها بمعرفات الأشخاص المستهدفين
+const targetIDs = ['1010185793807077516', '1167543803566100562']; // استبدلها بمعرفات الأشخاص المستهدفين
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
@@ -70,7 +70,7 @@ client.on("messageCreate", message => {
                                     })
                                     .then(() => new Promise(resolve => setTimeout(resolve, 1000))) // الانتظار 1 ثانية
                                     .then(() => {
-                                        return channel1.send('<@' + message.author.id + '> PRANK AKHIR ZAMAN').then(() => {
+                                        return channel1.send('!dep all').then(() => {
                                             console.log('تم إرسال أمر !with 5e6');
                                         });
                                     });
