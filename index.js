@@ -8,7 +8,7 @@ let flag = false;
 const targetIDs = ['1082462305423462531', '', '']; // استبدلها بمعرفات الأشخاص المستهدفين
 
 client.on("ready", () => {
-console.log(تم تسجيل الدخول باسم ${client.user.tag});
+console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
 });
 
 client.on("messageCreate", message => {
