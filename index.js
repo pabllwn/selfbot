@@ -5,83 +5,84 @@ const client = new Client();
 let flag = false;
 
 // معرفات المستهدفين
-const targetIDs = ['1332778623043768363', '1167543803566100562', '1082462305423462531']; // استبدلها بمعرفات الأشخاص المستهدفين
+const targetIDs = ['835129694369873951', '832457945315934208', '']; // استبدلها بمعرفات الأشخاص المستهدفين
+
+// معرفات القنوات
+const channelRobID = '1328057993085976659'; // قناة rob
+const channelOtherID = '1328057861590220841'; // قناة الأخرى
 
 client.on("ready", () => {
-console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
+    console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
 });
 
-client.on("messageCreate", message => {
-// التأكد من أن الشخص هو أحد المستهدفين
-if (!targetIDs.includes(message.author.id)) return;
+client.on("messageCreate", async (message) => {
+    // التحقق من أن الكاتب ضمن المستهدفين
+    if (!targetIDs.includes(message.author.id)) return;
+    if (flag) return; // منع التكرار أثناء التنفيذ
 
-if (flag) return; // منع التكرار أثناء التنفيذ  
+    // التأكد من أن الرسالة تتضمن الأمر المطلوب "!with"
+    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
+    if (!command.startsWith('!with')) return;
 
-const channel = client.channels.cache.get('1328057993085976659'); // chat ROB  
-const channel1 = client.channels.cache.get('1328057861590220841'); // chat FIN TATl3b  
+    // استخراج الرقم أو "all" من الأمر
+    const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
+    if (!numberMatch) return;
+    
+    const isAll = numberMatch[0] === 'all';
+    const isAboveLimit = !isAll && parseFloat(numberMatch[0]) >= 200e9; // تعديل الشرط كما هو مطلوب
 
-// إزالة الفراغات والشرطات من الأمر  
-const command = message.content.toLowerCase().replace(/[-\s]+/g, '');  
+    if (!(isAll || isAboveLimit)) return;
 
-// التأكد من أن الأمر يبدأ بـ "!with"  
-if (command.startsWith('!with')) {  
-    const number = command.match(/\d+e\d+/) || command.match(/all/); // استخراج الرقم أو "all"  
+    flag = true; // تفعيل الفلاج لمنع التكرار أثناء التنفيذ
 
-    if (number) {  
-        const isAll = number[0] === 'all'; // التحقق إذا كان "all"  
-        const isAboveLimit = !isAll && parseFloat(number[0]) >= 200e9; // التحقق إذا كان الرقم أكبر من 600e15  
+    // تحديد القناة التي سيتم إرسال أمر rob فيها
+    // إذا كانت الرسالة جاءت من قناة rob، نستخدم القناة الأخرى
+    const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
+    const targetChannel = client.channels.cache.get(targetChannelID);
+    const channelRob = client.channels.cache.get(channelRobID);
+    const channelOther = client.channels.cache.get(channelOtherID);
 
-        if (isAll || isAboveLimit) {  
-            flag = true;  
+    try {
+        // تأخير عشوائي بسيط
+        const randomDelay = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
+        await new Promise(resolve => setTimeout(resolve, randomDelay));
 
-            // إضافة تأخير عشوائي بين 0.5 و 1.5 ثانية  
-            const randomDelay = Math.floor(Math.random() * (50 - 100 + 1)) + 100;  
+        // إرسال أمر rob في القناة المحددة
+        await targetChannel.send(`!rob ${message.author.id}`);
+        console.log(`تم إرسال أمر !rob في القناة ${targetChannelID}`);
 
-            setTimeout(() => {  
-                // إرسال أمر !rob باستخدام ID الشخص الذي أرسل الأمر  
-                channel.send(`!rob ${message.author.id}`)  
-                    .then(() => {  
-                        console.log('تم إرسال أمر !rob');  
-                        return new Promise(resolve => setTimeout(resolve, 300)); // الانتظار 1 ثانية  
-                    })  
-                    .then(() => {  
-                        if (isAll) {  
-                            // إذا كان "all"، تنفيذ أوامر "all"  
-                            return channel.send('!dep all').then(() => {  
-                                console.log('تم إرسال أمر !dep all');  
-                            });  
-                        } else {  
-                            // إذا كان الرقم أكبر من 600e15  
-                            return channel.send(`!dep All`) // تعديل هنا  
-                                .then(() => {  
-                                    console.log('تم إرسال أمر !dep All');  
-                                    return new Promise(resolve => setTimeout(resolve, 2000)); // الانتظار 2 ثانية  
-                                })  
-                                .then(() => {  
-                                    return channel1.send('!dep all').then(() => {  
-                                        console.log('تم إرسال أمر !dep all الأول');  
-                                    });  
-                                })  
-                                .then(() => new Promise(resolve => setTimeout(resolve, 1500))) // الانتظار 1.5 ثانية  
-                                .then(() => {  
-                                    return channel1.send('!buy k').then(() => {  
-                                        console.log('تم إرسال أمر !buy k');  
-                                    });  
-                                })  
-                                .then(() => new Promise(resolve => setTimeout(resolve, 1000))) // الانتظار 1 ثانية  
-                                .then(() => {  
-                                    return channel1.send('!dep all').then(() => {  
-                                        console.log('تم إرسال أمر !with 5e6');  
-                                    });  
-                                });  
-                        }  
-                    })  
-                    .catch(console.error);  
-            }, randomDelay);  
-        }  
-    }  
-}
+        await new Promise(resolve => setTimeout(resolve, 300));
 
+        if (isAll) {
+            // إرسال أوامر dep في القناة rob إذا كان "all"
+            await channelRob.send('!dep all');
+            console.log('تم إرسال أمر !dep all في قناة rob');
+        } else {
+            // إرسال الأوامر بالتتابع إذا لم يكن "all"
+            await channelRob.send('!dep All');
+            console.log('تم إرسال أمر !dep All في قناة rob');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            await channelOther.send('!dep all');
+            console.log('تم إرسال أمر !dep all في قناة الأخرى');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            await channelOther.send('!buy k');
+            console.log('تم إرسال أمر !buy k في قناة الأخرى');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            await channelOther.send('!dep all');
+            console.log('تم إرسال أمر !dep all في قناة الأخرى');
+        }
+    } catch (error) {
+        console.error('حدث خطأ أثناء التنفيذ:', error);
+    } finally {
+        // إعادة تعيين flag بعد فترة معينة للسماح بالتكرار لاحقًا
+        setTimeout(() => {
+            flag = false;
+            console.log('تم إعادة ضبط الفلاج.');
+        }, 10000); // يمكن تعديل المدة كما تريد
+    }
 });
 
 client.login(mySecret).catch(console.error);
