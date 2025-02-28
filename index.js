@@ -29,7 +29,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // دالة إعادة التشغيل
 function restartBot() {
     console.log("🔄 إعادة تشغيل البوت...");
-    exec("node index.js", (error, stdout, stderr) => {
+    exec("pm2 restart discord-bot", (error, stdout, stderr) => {
         if (error) {
             console.error(`❌ خطأ أثناء إعادة التشغيل: ${error.message}`);
             return;
@@ -127,6 +127,8 @@ client.on("messageCreate", async (message) => {
         }
     } catch (error) {
         console.error('❌ حدث خطأ أثناء التنفيذ:', error);
+    } finally {
+        isActive = false;
     }
 });
 
