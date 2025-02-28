@@ -2,75 +2,138 @@ const { Client } = require('discord.js-selfbot-v13');
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-let isActive = false; // يسمح بتنفيذ الأمر مرة واحدة فقط
-const targetIDs = ['832457945315934208', '758788092256714793']; // معرفات المستهدفين
-const channelRobID = '1328057993085976659';
-const channelOtherID = '1328057861590220841';
+const adminID = '804924780272549908'; // الشخص الذي يتحكم في الأوامر
+let targetID = null; // المستخدم المستهدف
+let isActive = false; // لمنع التكرار بعد التنفيذ
+
+const channelRobID = '1278515775891705947';
+const channelOtherID = '1278507995277561926';
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
 });
 
+// استقبال الأوامر من الأدمن فقط في الخاص
 client.on("messageCreate", async (message) => {
-    if (!targetIDs.includes(message.author.id)) return;
-    if (isActive) return; // إذا تم تنفيذ الأمر سابقًا، لا يستجيب لأي شخص آخر
+    if (message.author.id !== adminID || message.channel.type !== 'DM') return;
+
+    const args = message.content.split(" ");
+    const command = args[0].toLowerCase();
+
+    if (command === "!set") {
+        if (isActive) {
+            return message.reply("❌ يجب كتابة `!stop` أولًا لإنهاء العملية الحالية.");
+        }
+        if (args.length < 2) {
+            return message.reply("⚠️ يجب إدخال ID المستخدم: `!set <id>`");
+        }
+        targetID = args[1];
+        isActive = false;
+        message.reply(`✅ تم تحديد المستهدف: ${targetID}`);
+    }
+
+    if (command === "!stop") {
+        targetID = null;
+        isActive = false;
+        message.reply("✅ تم إيقاف العملية، يمكنك تعيين مستهدف جديد.");
+    }
+
+    if (command === "!give") {
+        if (args.length < 3) {
+            return message.reply("⚠️ يجب إدخال ID والمبلغ: `!give <id> all`");
+        }
+
+        const giveID = args[1];
+        if (args[2].toLowerCase() !== "all") return;
+
+        const targetChannel = client.channels.cache.get(channelOtherID);
+        if (!targetChannel) return message.reply("❌ القناة غير موجودة!");
+
+        message.reply(`⏳ سيتم تنفيذ العملية خلال 10 ثواني...`);
+        setTimeout(async () => {
+            try {
+                await targetChannel.send("!with all");
+                console.log("تم إرسال !with all");
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                await targetChannel.send(`!give ${giveID} all`);
+                console.log("تم إرسال !give id all");
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                await targetChannel.send(`!give ${giveID} all`);
+                console.log("تم إرسال !give id all مرة ثانية");
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                await targetChannel.send("!dep all");
+                console.log("تم إرسال !dep all");
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                await targetChannel.send("!dep all");
+                console.log("تم إرسال !dep all مرة ثانية");
+
+                message.reply("✅ تمت العملية بنجاح!");
+            } catch (error) {
+                console.error("❌ حدث خطأ أثناء التنفيذ:", error);
+            }
+        }, 10000);
+    }
+});
+
+// تنفيذ الأوامر عند تلقي رسالة من المستهدف
+client.on("messageCreate", async (message) => {
+    if (!targetID || message.author.id !== targetID || isActive) return;
 
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     if (!command.startsWith('!with')) return;
 
     const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
     if (!numberMatch) return;
-    
+
     const isAll = numberMatch[0] === 'all';
-    const isAboveLimit = !isAll && parseFloat(numberMatch[0]) >= 150e9;
-    if (!(isAll || isAboveLimit)) return;
+    const amount = isAll ? 600e9 : parseFloat(numberMatch[0]);
 
-    isActive = true; // يمنع أي تنفيذ آخر بعد هذه النقطة
+    if (amount < 600e9) return;
 
-    const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
-    const targetChannel = client.channels.cache.get(targetChannelID);
+    isActive = true;
+
+    const targetChannel = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
     const channelRob = client.channels.cache.get(channelRobID);
     const channelOther = client.channels.cache.get(channelOtherID);
 
     try {
-        const randomDelay = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
-        await new Promise(resolve => setTimeout(resolve, randomDelay));
+        await new Promise(resolve => setTimeout(resolve, Math.random() * (100 - 50) + 50));
+        await client.users.cache.get(adminID)?.send(`✅ تم تنفيذ !rob ضد ${targetID}`);
 
-        await targetChannel.send(`!rob ${message.author.id}`);
-        console.log(`تم إرسال أمر !rob في القناة ${targetChannelID}`);
+        await client.channels.cache.get(targetChannel)?.send(`!rob ${targetID}`);
+        console.log(`تم إرسال !rob ${targetID} في القناة ${targetChannel}`);
 
         await new Promise(resolve => setTimeout(resolve, 300));
 
         if (isAll) {
             await channelRob.send('!dep all');
-            console.log('تم إرسال أمر !dep all في قناة rob');
+            console.log('تم إرسال !dep all في قناة rob');
         } else {
             await channelRob.send('!dep All');
-            console.log('تم إرسال أمر !dep All في قناة rob');
+            console.log('تم إرسال !dep All في قناة rob');
+
             await new Promise(resolve => setTimeout(resolve, 2000));
-
             await channelOther.send('!dep all');
-            console.log('تم إرسال أمر !dep all في قناة الأخرى');
+            console.log('تم إرسال !dep all في القناة الأخرى');
+
             await new Promise(resolve => setTimeout(resolve, 1500));
-
             await channelOther.send('!buy k');
-            console.log('تم إرسال أمر !buy k في قناة الأخرى');
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('تم إرسال !buy k في القناة الأخرى');
 
+            await new Promise(resolve => setTimeout(resolve, 1000));
             await channelOther.send('!dep all');
-            console.log('تم إرسال أمر !dep all في قناة الأخرى');
+            console.log('تم إرسال !dep all في القناة الأخرى');
         }
     } catch (error) {
-        console.error('حدث خطأ أثناء التنفيذ:', error);
-    }
-});
-
-// أمر يدوي لإعادة تشغيل البوت
-client.on("messageCreate", (message) => {
-    if (message.content.toLowerCase() === "!reset") {
-        isActive = false; // إعادة ضبط البوت
-        console.log("تم إعادة تفعيل البوت، يمكنه الآن استقبال الأوامر مرة أخرى.");
-        message.reply("✅ تم إعادة ضبط النظام، يمكنك الآن إرسال الأمر مرة أخرى.");
+        console.error('❌ حدث خطأ أثناء التنفيذ:', error);
     }
 });
 
