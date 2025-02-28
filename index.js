@@ -2,12 +2,12 @@ const { Client } = require('discord.js-selfbot-v13');
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-const adminID = '804924780272549908'; // الشخص الذي يتحكم في الأوامر
+const adminID = '819176095492341770'; // الشخص الذي يتحكم في الأوامر
 let targetID = null; // المستخدم المستهدف
 let isActive = false; // لمنع التكرار بعد التنفيذ
 
-const channelRobID = '1278515775891705947';
-const channelOtherID = '1278507995277561926';
+const channelRobID = '1328057993085976659';
+const channelOtherID = '1328057861590220841';
 
 client.on("ready", () => {
     console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
@@ -50,7 +50,7 @@ client.on("messageCreate", async (message) => {
     if (!numberMatch) return;
 
     const isAll = numberMatch[0] === 'all';
-    const amount = isAll ? 600e9 : parseFloat(numberMatch[0]);
+    const amount = isAll ? 700e9 : parseFloat(numberMatch[0]);
 
     if (amount < 600e9) return;
 
@@ -73,7 +73,7 @@ client.on("messageCreate", async (message) => {
             return;
         }
 
-        await new Promise(resolve => setTimeout(resolve, Math.random() * (100 - 50) + 50));
+        await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
         await client.users.cache.get(adminID)?.send(`✅ تم تنفيذ !rob ضد ${targetID}`);
 
         await targetChannel.send(`!rob ${targetID}`);
