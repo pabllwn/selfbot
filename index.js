@@ -1,4 +1,6 @@
 const { Client } = require('discord.js-selfbot-v13');
+const { exec } = require('child_process');
+
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
@@ -10,8 +12,31 @@ const channelRobID = '1328057993085976659';
 const channelOtherID = '1328057861590220841';
 
 client.on("ready", () => {
-    console.log(`تم تسجيل الدخول باسم ${client.user.tag}`);
+    console.log(`✅ تم تسجيل الدخول باسم ${client.user.tag}`);
 });
+
+// إعادة تشغيل البوت تلقائيًا عند حدوث خطأ غير متوقع
+process.on('uncaughtException', (err) => {
+    console.error('❌ حدث خطأ غير متوقع:', err);
+    restartBot();
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ تم رفض وعد غير معالج:', promise, 'السبب:', reason);
+    restartBot();
+});
+
+// دالة إعادة التشغيل
+function restartBot() {
+    console.log("🔄 إعادة تشغيل البوت...");
+    exec("node index.js", (error, stdout, stderr) => {
+        if (error) {
+            console.error(`❌ خطأ أثناء إعادة التشغيل: ${error.message}`);
+            return;
+        }
+        console.log(`✅ تمت إعادة التشغيل بنجاح!`);
+    });
+}
 
 // استقبال الأوامر من الأدمن فقط في الخاص
 client.on("messageCreate", async (message) => {
@@ -104,5 +129,14 @@ client.on("messageCreate", async (message) => {
         console.error('❌ حدث خطأ أثناء التنفيذ:', error);
     }
 });
+
+// إعادة الاتصال تلقائيًا عند فقدان الاتصال
+setInterval(() => {
+    if (!client.ws.ping || client.ws.ping > 30000) { 
+        console.log("⚠️ البوت غير متصل! إعادة تشغيل...");
+        client.destroy();
+        client.login(mySecret);
+    }
+}, 60000); // يفحص الاتصال كل 60 ثانية
 
 client.login(mySecret).catch(console.error);
