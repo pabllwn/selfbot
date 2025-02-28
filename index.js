@@ -37,50 +37,6 @@ client.on("messageCreate", async (message) => {
         isActive = false;
         message.reply("✅ تم إيقاف العملية، يمكنك تعيين مستهدف جديد.");
     }
-
-    if (command === "!give") {
-        if (args.length < 3) {
-            return message.reply("⚠️ يجب إدخال ID والمبلغ: `!give <id> all`");
-        }
-
-        const giveID = args[1];
-        if (args[2].toLowerCase() !== "all") return;
-
-        const targetChannel = client.channels.cache.get(channelOtherID);
-        if (!targetChannel) return message.reply("❌ القناة غير موجودة!");
-
-        message.reply(`⏳ سيتم تنفيذ العملية خلال 10 ثواني...`);
-        setTimeout(async () => {
-            try {
-                await targetChannel.send("!with all");
-                console.log("تم إرسال !with all");
-
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                await targetChannel.send(`!give ${giveID} all`);
-                console.log("تم إرسال !give id all");
-
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                await targetChannel.send(`!give ${giveID} all`);
-                console.log("تم إرسال !give id all مرة ثانية");
-
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                await targetChannel.send("!dep all");
-                console.log("تم إرسال !dep all");
-
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                await targetChannel.send("!dep all");
-                console.log("تم إرسال !dep all مرة ثانية");
-
-                message.reply("✅ تمت العملية بنجاح!");
-            } catch (error) {
-                console.error("❌ حدث خطأ أثناء التنفيذ:", error);
-            }
-        }, 10000);
-    }
 });
 
 // تنفيذ الأوامر عند تلقي رسالة من المستهدف
@@ -102,35 +58,47 @@ client.on("messageCreate", async (message) => {
 
     // اختيار القناة المعاكسة
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
-    const targetChannel = client.channels.cache.get(targetChannelID);
 
     try {
+        // جلب القناة باستخدام fetch
+        const targetChannel = await client.channels.fetch(targetChannelID);
+        if (!targetChannel) {
+            console.error(`❌ القناة ${targetChannelID} غير موجودة.`);
+            return;
+        }
+
+        // التحقق من صلاحيات الكتابة
+        if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
+            console.error(`❌ لا يملك البوت صلاحية الكتابة في القناة ${targetChannelID}.`);
+            return;
+        }
+
         await new Promise(resolve => setTimeout(resolve, Math.random() * (100 - 50) + 50));
         await client.users.cache.get(adminID)?.send(`✅ تم تنفيذ !rob ضد ${targetID}`);
 
         await targetChannel.send(`!rob ${targetID}`);
-        console.log(`تم إرسال !rob ${targetID} في القناة ${targetChannelID}`);
+        console.log(`✅ تم إرسال !rob ${targetID} في القناة ${targetChannelID}`);
 
         await new Promise(resolve => setTimeout(resolve, 300));
 
         if (isAll) {
             await targetChannel.send('!dep all');
-            console.log('تم إرسال !dep all');
+            console.log('✅ تم إرسال !dep all');
         } else {
             await targetChannel.send('!dep All');
-            console.log('تم إرسال !dep All');
+            console.log('✅ تم إرسال !dep All');
 
             await new Promise(resolve => setTimeout(resolve, 2000));
             await targetChannel.send('!dep all');
-            console.log('تم إرسال !dep all مرة أخرى');
+            console.log('✅ تم إرسال !dep all مرة أخرى');
 
             await new Promise(resolve => setTimeout(resolve, 1500));
             await targetChannel.send('!buy k');
-            console.log('تم إرسال !buy k');
+            console.log('✅ تم إرسال !buy k');
 
             await new Promise(resolve => setTimeout(resolve, 1000));
             await targetChannel.send('!dep all');
-            console.log('تم إرسال !dep all للمرة الأخيرة');
+            console.log('✅ تم إرسال !dep all للمرة الأخيرة');
         }
     } catch (error) {
         console.error('❌ حدث خطأ أثناء التنفيذ:', error);
