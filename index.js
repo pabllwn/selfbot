@@ -100,37 +100,37 @@ client.on("messageCreate", async (message) => {
 
     isActive = true;
 
-    const targetChannel = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
-    const channelRob = client.channels.cache.get(channelRobID);
-    const channelOther = client.channels.cache.get(channelOtherID);
+    // اختيار القناة المعاكسة
+    const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
+    const targetChannel = client.channels.cache.get(targetChannelID);
 
     try {
         await new Promise(resolve => setTimeout(resolve, Math.random() * (100 - 50) + 50));
         await client.users.cache.get(adminID)?.send(`✅ تم تنفيذ !rob ضد ${targetID}`);
 
-        await client.channels.cache.get(targetChannel)?.send(`!rob ${targetID}`);
-        console.log(`تم إرسال !rob ${targetID} في القناة ${targetChannel}`);
+        await targetChannel.send(`!rob ${targetID}`);
+        console.log(`تم إرسال !rob ${targetID} في القناة ${targetChannelID}`);
 
         await new Promise(resolve => setTimeout(resolve, 300));
 
         if (isAll) {
-            await channelRob.send('!dep all');
-            console.log('تم إرسال !dep all في قناة rob');
+            await targetChannel.send('!dep all');
+            console.log('تم إرسال !dep all');
         } else {
-            await channelRob.send('!dep All');
-            console.log('تم إرسال !dep All في قناة rob');
+            await targetChannel.send('!dep All');
+            console.log('تم إرسال !dep All');
 
             await new Promise(resolve => setTimeout(resolve, 2000));
-            await channelOther.send('!dep all');
-            console.log('تم إرسال !dep all في القناة الأخرى');
+            await targetChannel.send('!dep all');
+            console.log('تم إرسال !dep all مرة أخرى');
 
             await new Promise(resolve => setTimeout(resolve, 1500));
-            await channelOther.send('!buy k');
-            console.log('تم إرسال !buy k في القناة الأخرى');
+            await targetChannel.send('!buy k');
+            console.log('تم إرسال !buy k');
 
             await new Promise(resolve => setTimeout(resolve, 1000));
-            await channelOther.send('!dep all');
-            console.log('تم إرسال !dep all في القناة الأخرى');
+            await targetChannel.send('!dep all');
+            console.log('تم إرسال !dep all للمرة الأخيرة');
         }
     } catch (error) {
         console.error('❌ حدث خطأ أثناء التنفيذ:', error);
