@@ -22,7 +22,7 @@ client.on("messageCreate", async (message) => {
     if (!numberMatch) return;
     
     const isAll = numberMatch[0] === 'all';
-    const isAboveLimit = !isAll && parseFloat(numberMatch[0]) >= 150e9;
+    const isAboveLimit = !isAll && parseFloat(numberMatch[0]) >= 600e9;
     if (!(isAll || isAboveLimit)) return;
 
     isActive = true; // يمنع أي تنفيذ آخر بعد هذه النقطة
