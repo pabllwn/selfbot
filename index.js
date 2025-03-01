@@ -4,37 +4,38 @@ const { exec } = require('child_process');
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-const adminID = '819176095492341770'; // الشخص الذي يتحكم في الأوامر
-let targetID = null; // المستخدم المستهدف
-let isActive = false; // لمنع التكرار بعد التنفيذ
+const adminID = '804924780272549908'; 
+let targetID = null; 
+let isActive = false; 
+let minAmount = 600e9; // القيمة الافتراضية للحد الأدنى
 
 const channelRobID = '1328057993085976659';
 const channelOtherID = '1328057861590220841';
 
 client.on("ready", () => {
-    console.log(`✅ تم تسجيل الدخول باسم ${client.user.tag}`);
+    console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
 // إعادة تشغيل البوت تلقائيًا عند حدوث خطأ غير متوقع
 process.on('uncaughtException', (err) => {
-    console.error('❌ حدث خطأ غير متوقع:', err);
+    console.error('❌ Unexpected Error:', err);
     restartBot();
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ تم رفض وعد غير معالج:', promise, 'السبب:', reason);
+    console.error('❌ Unhandled Promise Rejection:', promise, 'Reason:', reason);
     restartBot();
 });
 
 // دالة إعادة التشغيل
 function restartBot() {
-    console.log("🔄 إعادة تشغيل البوت...");
+    console.log("🔄 Restarting bot...");
     exec("pm2 restart discord-bot", (error, stdout, stderr) => {
         if (error) {
-            console.error(`❌ خطأ أثناء إعادة التشغيل: ${error.message}`);
+            console.error(`❌ Restart Error: ${error.message}`);
             return;
         }
-        console.log(`✅ تمت إعادة التشغيل بنجاح!`);
+        console.log("✅ Restarted successfully!");
     });
 }
 
@@ -47,20 +48,38 @@ client.on("messageCreate", async (message) => {
 
     if (command === "!set") {
         if (isActive) {
-            return message.reply("❌ يجب كتابة `!stop` أولًا لإنهاء العملية الحالية.");
+            return message.reply("❌ You must type `!stop` first to end the current process.");
         }
         if (args.length < 2) {
-            return message.reply("⚠️ يجب إدخال ID المستخدم: `!set <id>`");
+            return message.reply("⚠️ Enter user ID: `!set <id>`");
         }
         targetID = args[1];
         isActive = false;
-        message.reply(`✅ تم تحديد المستهدف: ${targetID}`);
+        message.reply(`✅ Target set: ${targetID}`);
     }
 
     if (command === "!stop") {
         targetID = null;
         isActive = false;
-        message.reply("✅ تم إيقاف العملية، يمكنك تعيين مستهدف جديد.");
+        message.reply("✅ Process stopped, you can set a new target.");
+    }
+
+    if (command === "!pr") {
+        if (args.length < 2 || isNaN(args[1])) {
+            return message.reply("⚠️ Enter a valid number: `!pr <amount>`");
+        }
+        minAmount = parseFloat(args[1]);
+        message.reply(`✅ Minimum amount set to: ${minAmount}`);
+    }
+
+    if (command === "!help") {
+        return message.reply(`
+**📌 Available Commands:**
+- \`!set <id>\` → Set target user.
+- \`!stop\` → Stop the current process.
+- \`!pr <amount>\` → Set the minimum amount for !with.
+- \`!help\` → Show this help message.
+        `);
     }
 });
 
@@ -77,56 +96,52 @@ client.on("messageCreate", async (message) => {
     const isAll = numberMatch[0] === 'all';
     const amount = isAll ? 700e9 : parseFloat(numberMatch[0]);
 
-    if (amount < 600e9) return;
+    if (amount < minAmount) return;
 
     isActive = true;
-
-    // اختيار القناة المعاكسة
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
 
     try {
-        // جلب القناة باستخدام fetch
         const targetChannel = await client.channels.fetch(targetChannelID);
         if (!targetChannel) {
-            console.error(`❌ القناة ${targetChannelID} غير موجودة.`);
+            console.error(`❌ Channel ${targetChannelID} not found.`);
             return;
         }
 
-        // التحقق من صلاحيات الكتابة
         if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
-            console.error(`❌ لا يملك البوت صلاحية الكتابة في القناة ${targetChannelID}.`);
+            console.error(`❌ Bot has no permission to send messages in ${targetChannelID}.`);
             return;
         }
 
         await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
-        await client.users.cache.get(adminID)?.send(`✅ تم تنفيذ !rob ضد ${targetID}`);
+        await client.users.cache.get(adminID)?.send(`✅ Executed !rob on ${targetID}`);
 
         await targetChannel.send(`!rob ${targetID}`);
-        console.log(`✅ تم إرسال !rob ${targetID} في القناة ${targetChannelID}`);
+        console.log(`✅ Sent !rob ${targetID} in channel ${targetChannelID}`);
 
         await new Promise(resolve => setTimeout(resolve, 300));
 
         if (isAll) {
             await targetChannel.send('!dep all');
-            console.log('✅ تم إرسال !dep all');
+            console.log('✅ Sent !dep all');
         } else {
             await targetChannel.send('!dep All');
-            console.log('✅ تم إرسال !dep All');
+            console.log('✅ Sent !dep All');
 
             await new Promise(resolve => setTimeout(resolve, 2000));
             await targetChannel.send('!dep all');
-            console.log('✅ تم إرسال !dep all مرة أخرى');
+            console.log('✅ Sent !dep all again');
 
             await new Promise(resolve => setTimeout(resolve, 1500));
             await targetChannel.send('!buy k');
-            console.log('✅ تم إرسال !buy k');
+            console.log('✅ Sent !buy k');
 
             await new Promise(resolve => setTimeout(resolve, 1000));
             await targetChannel.send('!dep all');
-            console.log('✅ تم إرسال !dep all للمرة الأخيرة');
+            console.log('✅ Sent !dep all for the last time');
         }
     } catch (error) {
-        console.error('❌ حدث خطأ أثناء التنفيذ:', error);
+        console.error('❌ Execution Error:', error);
     } finally {
         isActive = false;
     }
@@ -134,11 +149,11 @@ client.on("messageCreate", async (message) => {
 
 // إعادة الاتصال تلقائيًا عند فقدان الاتصال
 setInterval(() => {
-    if (!client.ws.ping || client.ws.ping > 30000) { 
-        console.log("⚠️ البوت غير متصل! إعادة تشغيل...");
+    if (!client.ws.ping || client.ws.ping > 30000) {
+        console.log("⚠️ Bot disconnected! Restarting...");
         client.destroy();
         client.login(mySecret);
     }
-}, 60000); // يفحص الاتصال كل 60 ثانية
+}, 60000);
 
 client.login(mySecret).catch(console.error);
