@@ -19,7 +19,7 @@ setInterval(() => {
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-const adminID = '819176095492341770'; 
+const adminIDs = ['598266878451777595', '804924780272549908']; // Add more IDs here
 let targetID = null; 
 let isActive = false; 
 let minAmount = 600e9; // القيمة الافتراضية للحد الأدنى
@@ -93,6 +93,7 @@ client.on("messageCreate", async (message) => {
 - \`!set <id>\` → Set target user.
 - \`!stop\` → Stop the current process.
 - \`!pr <amount>\` → Set the minimum amount for !with.
+- \`!give <id> all\` → Give all to the specified user.
 - \`!help\` → Show this help message.
         `);
     }
@@ -113,7 +114,8 @@ client.on("messageCreate", async (message) => {
 
     if (amount < minAmount) return;
 
-    isActive = true;
+    isActive = false;  // Stop the current operation as if !stop was triggered automatically
+
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
 
     try {
