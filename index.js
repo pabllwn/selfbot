@@ -1,10 +1,25 @@
 const { Client } = require('discord.js-selfbot-v13');
 const { exec } = require('child_process');
+const http = require('http');
+const express = require('express');
+const app = express();
 
+// إنشاء سيرفر HTTP بسيط
+http.createServer((req, res) => {
+    res.write("Bot is alive!");
+    res.end();
+}).listen(3000);
+
+// إرسال طلب كل 5 دقائق للحفاظ على النشاط
+setInterval(() => {
+    require('https').get('https://selfbot-or3a.onrender.com'); // استبدل برابط البوت الخاص بك
+}, 300000); // 5 دقائق
+
+// إعدادات البوت
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-const adminID = '804924780272549908'; 
+const adminID = '819176095492341770'; 
 let targetID = null; 
 let isActive = false; 
 let minAmount = 600e9; // القيمة الافتراضية للحد الأدنى
