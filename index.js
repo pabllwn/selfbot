@@ -1,23 +1,38 @@
 const { Client } = require('discord.js-selfbot-v13');
 const { exec } = require('child_process');
+const http = require('http');
+const express = require('express');
+const app = express();
 
+// إنشاء سيرفر HTTP بسيط
+http.createServer((req, res) => {
+    res.write("Bot is alive!");
+    res.end();
+}).listen(3000);
+
+// إرسال طلب كل 5 دقائق للحفاظ على النشاط
+setInterval(() => {
+    require('https').get('https://selfbot-or3a.onrender.com'); // استبدل برابط البوت الخاص بك
+}, 300000); // 5 دقائق
+
+// تعريف المتغيرات
 const mySecret = process.env['TOKEN'];
-const client = new Client({
-    keepAlive: true, // تمكين keepAlive
-});
+const client = new Client();
 
-const adminIDs = ['598266878451777595', '804924780272549908'];
-let targetID = null;
-let isActive = false;
-let minAmount = null;
+const adminIDs = ['598266878451777595', '804924780272549908']; // قم بإضافة أي دي الأدمن هنا
+let targetID = null; // أي دي المستخدم المستهدف
+let isActive = false; // لمنع تنفيذ أوامر متعددة في نفس الوقت
+let minAmount = null; // الحد الأدنى للمبلغ
 
-const channelRobID = '1328057993085976659';
-const channelOtherID = '1328057861590220841';
+const channelRobID = '1328057993085976659'; // أي دي القناة الأولى
+const channelOtherID = '1328057861590220841'; // أي دي القناة الثانية
 
+// حدث عند اتصال البوت
 client.on("ready", () => {
     console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
+// إعادة تشغيل البوت في حالة حدوث أخطاء غير متوقعة
 process.on('uncaughtException', (err) => {
     console.error('❌ Unexpected error occurred:', err);
     restartBot();
@@ -28,6 +43,7 @@ process.on('unhandledRejection', (reason, promise) => {
     restartBot();
 });
 
+// وظيفة إعادة تشغيل البوت
 function restartBot() {
     console.log("🔄 Restarting the bot...");
     exec("pm2 restart discord-bot", (error, stdout, stderr) => {
@@ -39,6 +55,7 @@ function restartBot() {
     });
 }
 
+// التعامل مع الأوامر من الأدمن في الرسائل الخاصة
 client.on("messageCreate", async (message) => {
     if (!adminIDs.includes(message.author.id) || message.channel.type !== 'DM') return;
 
@@ -83,6 +100,7 @@ client.on("messageCreate", async (message) => {
     }
 });
 
+// التعامل مع الأوامر من المستخدم المستهدف
 client.on("messageCreate", async (message) => {
     if (!targetID || message.author.id !== targetID || isActive) return;
 
@@ -99,15 +117,18 @@ client.on("messageCreate", async (message) => {
 
     isActive = true;
 
+    // اختيار القناة المعاكسة
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
 
     try {
+        // جلب القناة
         const targetChannel = await client.channels.fetch(targetChannelID);
         if (!targetChannel) {
             console.error(`❌ Channel ${targetChannelID} not found.`);
             return;
         }
 
+        // التحقق من صلاحية البوت لإرسال الرسائل
         if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
             console.error(`❌ The bot doesn't have permission to send messages in channel ${targetChannelID}.`);
             return;
@@ -133,9 +154,11 @@ client.on("messageCreate", async (message) => {
             console.log('✅ Sent !dep all again');
         }
 
+        // بعد إرسال أمر السرقة، إعادة تعيين أي دي المستهدف
         targetID = null;
         console.log(`✅ Target ID ${targetID} reset after rob execution.`);
         
+        // إعلام الأدمن عبر الرسائل الخاصة
         await client.users.cache.get(adminIDs[0])?.send(`✅ !rob executed successfully against ${message.author.tag}`);
     } catch (error) {
         console.error('❌ Error during execution:', error);
@@ -144,6 +167,7 @@ client.on("messageCreate", async (message) => {
     }
 });
 
+// إعادة الاتصال التلقائي في حالة فقدان الاتصال
 setInterval(() => {
     if (!client.ws.ping || client.ws.ping > 30000) {
         console.log("⚠️ The bot is not connected! Reconnecting...");
@@ -152,4 +176,5 @@ setInterval(() => {
     }
 }, 60000);
 
+// تسجيل الدخول باستخدام التوكن
 client.login(mySecret).catch(console.error);
