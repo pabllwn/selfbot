@@ -123,14 +123,17 @@ client.on("messageCreate", async (message) => {
                 console.log("Sent !with all");
 
                 // Step 2: Wait 50 milliseconds
-                await new Promise(resolve => setTimeout(resolve, 150));
+                await new Promise(resolve => setTimeout(resolve, 250));
 
                 // Step 3: Send !give <id> all
                 await targetChannel.send(`!give ${giveID} all`);
                 console.log(`Sent !give ${giveID} all`);
 
+                await targetChannel.send(`!give ${giveID} all`);
+                console.log(`Sent !give ${giveID} all`);
+                
                 // Step 4: Wait 2 seconds
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
                 // Step 5: Send !dep all
                 await targetChannel.send("!dep all");
