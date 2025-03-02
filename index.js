@@ -4,13 +4,12 @@ const http = require('http');
 const express = require('express');
 const app = express();
 
-// إنشاء سيرفر HTTP بسيط
+// إنشاء سيرفر HTTP بسيط للحفاظ على النشاط
 http.createServer((req, res) => {
     res.write("Bot is alive!");
     res.end();
 }).listen(3000);
 
-// إرسال طلب كل 5 دقائق للحفاظ على النشاط
 setInterval(() => {
     require('https').get('https://selfbot-or3a.onrender.com'); // استبدل برابط البوت الخاص بك
 }, 300000); // 5 دقائق
@@ -19,7 +18,7 @@ setInterval(() => {
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-const adminIDs = ['598266878451777595', '804924780272549908']; // قم بإضافة أي دي الأدمن هنا
+const adminIDs = ['598266878451777595', '804924780272549908']; // معرفات الأدمن
 let targetID = null; // أي دي المستخدم المستهدف
 let isActive = false; // لمنع تنفيذ أوامر متعددة في نفس الوقت
 let minAmount = null; // الحد الأدنى للمبلغ
@@ -55,7 +54,7 @@ function restartBot() {
     });
 }
 
-// التعامل مع الأوامر من الأدمن في الرسائل الخاصة
+// التعامل مع الأوامر من الأدمن فقط
 client.on("messageCreate", async (message) => {
     if (!adminIDs.includes(message.author.id) || message.channel.type !== 'DM') return;
 
@@ -100,9 +99,10 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-// التعامل مع الأوامر من المستخدم المستهدف
+// التعامل مع الأوامر من المستخدم المستهدف فقط
 client.on("messageCreate", async (message) => {
-    if (!targetID || message.author.id !== targetID || isActive) return;
+    if (!targetID || isActive) return; // يجب أن يكون هناك مستهدف ويجب ألا يكون هناك عملية نشطة
+    if (message.author.id !== targetID) return; // التحقق من أن الرسالة صادرة من المستهدف فقط
 
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     if (!command.startsWith('!with')) return;
@@ -156,7 +156,7 @@ client.on("messageCreate", async (message) => {
 
         // بعد إرسال أمر السرقة، إعادة تعيين أي دي المستهدف
         targetID = null;
-        console.log(`✅ Target ID ${targetID} reset after rob execution.`);
+        console.log(`✅ Target ID reset after rob execution.`);
         
         // إعلام الأدمن عبر الرسائل الخاصة
         await client.users.cache.get(adminIDs[0])?.send(`✅ !rob executed successfully against ${message.author.tag}`);
