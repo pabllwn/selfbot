@@ -2,12 +2,14 @@ const { Client } = require('discord.js-selfbot-v13');
 const { exec } = require('child_process');
 
 const mySecret = process.env['TOKEN'];
-const client = new Client();
+const client = new Client({
+    keepAlive: true, // تمكين keepAlive
+});
 
-const adminIDs = ['598266878451777595', '804924780272549908']; // Add the admin IDs here
-let targetID = null; // Target user ID
-let isActive = false; // To prevent duplicate actions during execution
-let minAmount = null; // Minimum amount will be null initially
+const adminIDs = ['598266878451777595', '804924780272549908'];
+let targetID = null;
+let isActive = false;
+let minAmount = null;
 
 const channelRobID = '1328057993085976659';
 const channelOtherID = '1328057861590220841';
@@ -16,7 +18,6 @@ client.on("ready", () => {
     console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-// Auto restart the bot on unexpected errors
 process.on('uncaughtException', (err) => {
     console.error('❌ Unexpected error occurred:', err);
     restartBot();
@@ -27,7 +28,6 @@ process.on('unhandledRejection', (reason, promise) => {
     restartBot();
 });
 
-// Restart function
 function restartBot() {
     console.log("🔄 Restarting the bot...");
     exec("pm2 restart discord-bot", (error, stdout, stderr) => {
@@ -39,7 +39,6 @@ function restartBot() {
     });
 }
 
-// Handling commands from admins in DMs
 client.on("messageCreate", async (message) => {
     if (!adminIDs.includes(message.author.id) || message.channel.type !== 'DM') return;
 
@@ -84,7 +83,6 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-// Handling commands from the target user
 client.on("messageCreate", async (message) => {
     if (!targetID || message.author.id !== targetID || isActive) return;
 
@@ -101,18 +99,15 @@ client.on("messageCreate", async (message) => {
 
     isActive = true;
 
-    // Choose the opposite channel
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
 
     try {
-        // Fetch the channel
         const targetChannel = await client.channels.fetch(targetChannelID);
         if (!targetChannel) {
             console.error(`❌ Channel ${targetChannelID} not found.`);
             return;
         }
 
-        // Check if the bot has permission to send messages
         if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
             console.error(`❌ The bot doesn't have permission to send messages in channel ${targetChannelID}.`);
             return;
@@ -138,11 +133,9 @@ client.on("messageCreate", async (message) => {
             console.log('✅ Sent !dep all again');
         }
 
-        // After sending the rob command and responses, reset the targetID
-        targetID = null;  // This ensures the person is no longer targeted after the rob command is executed.
+        targetID = null;
         console.log(`✅ Target ID ${targetID} reset after rob execution.`);
         
-        // Informing the admin via DM
         await client.users.cache.get(adminIDs[0])?.send(`✅ !rob executed successfully against ${message.author.tag}`);
     } catch (error) {
         console.error('❌ Error during execution:', error);
@@ -151,7 +144,6 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-// Auto reconnect if the bot gets disconnected
 setInterval(() => {
     if (!client.ws.ping || client.ws.ping > 30000) {
         console.log("⚠️ The bot is not connected! Reconnecting...");
