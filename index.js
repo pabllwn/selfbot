@@ -99,70 +99,48 @@ client.on("messageCreate", async (message) => {
 - \`!help\` → Show this help message.
         `);
     }
-});
 
-// تنفيذ الأوامر عند تلقي رسالة من المستهدف
-client.on("messageCreate", async (message) => {
-    if (!targetID || message.author.id !== targetID || isActive) return;
+    // تنفيذ أمر !give <id> all
+    if (command === "!give" && args[2]?.toLowerCase() === "all") {
+        if (args.length < 3) {
+            return message.reply("⚠️ Enter the correct format: `!give <id> all`");
+        }
 
-    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
-    if (!command.startsWith('!with')) return;
+        const giveID = args[1];
+        const targetChannel = await client.channels.fetch(channelRobID); // Use channelRobID here
 
-    const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
-    if (!numberMatch) return;
-
-    const isAll = numberMatch[0] === 'all';
-    const amount = isAll ? 700e9 : parseFloat(numberMatch[0]);
-
-    if (amount < minAmount) return;
-
-    isActive = false;  // Stop the current operation as if !stop was triggered automatically
-
-    const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
-
-    try {
-        const targetChannel = await client.channels.fetch(targetChannelID);
         if (!targetChannel) {
-            console.error(`❌ Channel ${targetChannelID} not found.`);
-            return;
+            return message.reply("❌ Target channel not found.");
         }
 
-        if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
-            console.error(`❌ Bot has no permission to send messages in ${targetChannelID}.`);
-            return;
-        }
+        message.reply(`⏳ The process will begin in 10 seconds...`);
 
-        await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
-        await client.users.cache.get(adminIDs[0])?.send(`✅ Executed !rob on ${targetID}`);
+        // Start the process after 10 seconds
+        setTimeout(async () => {
+            try {
+                // Step 1: Send !with all in the channel
+                await targetChannel.send("!with all");
+                console.log("Sent !with all");
 
-        await targetChannel.send(`!rob ${targetID}`);
-        console.log(`✅ Sent !rob ${targetID} in channel ${targetChannelID}`);
+                // Step 2: Wait 50 milliseconds
+                await new Promise(resolve => setTimeout(resolve, 50));
 
-        await new Promise(resolve => setTimeout(resolve, 300));
+                // Step 3: Send !give <id> all
+                await targetChannel.send(`!give ${giveID} all`);
+                console.log(`Sent !give ${giveID} all`);
 
-        if (isAll) {
-            await targetChannel.send('!dep all');
-            console.log('✅ Sent !dep all');
-        } else {
-            await targetChannel.send('!dep All');
-            console.log('✅ Sent !dep All');
+                // Step 4: Wait 2 seconds
+                await new Promise(resolve => setTimeout(resolve, 2000));
 
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            await targetChannel.send('!dep all');
-            console.log('✅ Sent !dep all again');
+                // Step 5: Send !dep all
+                await targetChannel.send("!dep all");
+                console.log("Sent !dep all");
 
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            await targetChannel.send('!buy k');
-            console.log('✅ Sent !buy k');
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await targetChannel.send('!dep all');
-            console.log('✅ Sent !dep all for the last time');
-        }
-    } catch (error) {
-        console.error('❌ Execution Error:', error);
-    } finally {
-        isActive = false;
+                message.reply("✅ The process has been successfully completed!");
+            } catch (error) {
+                console.error("❌ An error occurred during the execution:", error);
+            }
+        }, 10000);
     }
 });
 
