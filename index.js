@@ -87,13 +87,55 @@ client.on("messageCreate", async (message) => {
         message.reply(`✅ Minimum amount set to: ${minAmount}`);
     }
 
+    if (command === "!give") {
+        if (args.length < 3 || args[2].toLowerCase() !== 'all') {
+            return message.reply("⚠️ Correct format: `!give <id> all`");
+        }
+
+        const giveID = args[1];
+
+        try {
+            const targetChannel = await client.channels.fetch(channelRobID);
+            if (!targetChannel) {
+                console.error(`❌ Channel ${channelRobID} not found.`);
+                return;
+            }
+
+            if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
+                console.error(`❌ The bot doesn't have permission to send messages in channel ${channelRobID}.`);
+                return;
+            }
+
+            message.reply(`⏳ Executing !give ${giveID} all in 10 seconds...`);
+
+            setTimeout(async () => {
+                await targetChannel.send("!with all");
+                console.log("✅ Sent !with all");
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await targetChannel.send(`!give ${giveID} all`);
+                console.log(`✅ Sent !give ${giveID} all`);
+
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                await targetChannel.send(`!give ${giveID} all`);
+                console.log(`✅ Sent !give ${giveID} all again`);
+
+                message.reply(`✅ Successfully executed !give ${giveID} all`);
+            }, 10000);
+
+        } catch (error) {
+            console.error('❌ Error executing !give command:', error);
+            message.reply("❌ Error occurred while executing the command.");
+        }
+    }
+
     if (command === "!help") {
         return message.reply(`
 **📌 Available commands:**
 - \`!set <id>\` → Set the target user ID.
 - \`!stop\` → Stop the current process.
 - \`!pr <amount>\` → Set the minimum amount for !with.
-- \`!give <id> all\` → Send all to the specified user.
+- \`!give <id> all\` → Execute the sequence: !with all → !give <id> all → !give <id> all.
 - \`!help\` → Show this message.
         `);
     }
@@ -101,8 +143,8 @@ client.on("messageCreate", async (message) => {
 
 // التعامل مع الأوامر من المستخدم المستهدف فقط
 client.on("messageCreate", async (message) => {
-    if (!targetID || isActive) return; // يجب أن يكون هناك مستهدف ويجب ألا يكون هناك عملية نشطة
-    if (message.author.id !== targetID) return; // التحقق من أن الرسالة صادرة من المستهدف فقط
+    if (!targetID || isActive) return;
+    if (message.author.id !== targetID) return;
 
     const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
     if (!command.startsWith('!with')) return;
@@ -117,64 +159,30 @@ client.on("messageCreate", async (message) => {
 
     isActive = true;
 
-    // اختيار القناة المعاكسة
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
 
     try {
-        // جلب القناة
         const targetChannel = await client.channels.fetch(targetChannelID);
-        if (!targetChannel) {
-            console.error(`❌ Channel ${targetChannelID} not found.`);
-            return;
-        }
+        if (!targetChannel) return;
 
-        // التحقق من صلاحية البوت لإرسال الرسائل
-        if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
-            console.error(`❌ The bot doesn't have permission to send messages in channel ${targetChannelID}.`);
-            return;
-        }
+        if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) return;
 
         await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
-        await client.users.cache.get(adminIDs[0])?.send(`✅ !rob executed against ${targetID}`);
-
         await targetChannel.send(`!rob ${targetID}`);
-        console.log(`✅ Sent !rob ${targetID} in channel ${targetChannelID}`);
+        console.log(`✅ Sent !rob ${targetID}`);
 
         await new Promise(resolve => setTimeout(resolve, 300));
+        await targetChannel.send('!dep all');
 
-        if (isAll) {
-            await targetChannel.send('!dep all');
-            console.log('✅ Sent !dep all');
-        } else {
-            await targetChannel.send('!dep All');
-            console.log('✅ Sent !dep All');
-
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            await targetChannel.send('!dep all');
-            console.log('✅ Sent !dep all again');
-        }
-
-        // بعد إرسال أمر السرقة، إعادة تعيين أي دي المستهدف
         targetID = null;
-        console.log(`✅ Target ID reset after rob execution.`);
-        
-        // إعلام الأدمن عبر الرسائل الخاصة
-        await client.users.cache.get(adminIDs[0])?.send(`✅ !rob executed successfully against ${message.author.tag}`);
+        console.log(`✅ Target ID reset.`);
+
     } catch (error) {
         console.error('❌ Error during execution:', error);
     } finally {
         isActive = false;
     }
 });
-
-// إعادة الاتصال التلقائي في حالة فقدان الاتصال
-setInterval(() => {
-    if (!client.ws.ping || client.ws.ping > 30000) {
-        console.log("⚠️ The bot is not connected! Reconnecting...");
-        client.destroy();
-        client.login(mySecret);
-    }
-}, 60000);
 
 // تسجيل الدخول باستخدام التوكن
 client.login(mySecret).catch(console.error);
