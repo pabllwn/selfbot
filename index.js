@@ -136,15 +136,14 @@ client.on("messageCreate", async (message) => {
             await new Promise(resolve => setTimeout(resolve, 2000));
             await targetChannel.send('!dep all');
             console.log('✅ Sent !dep all again');
-
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            await targetChannel.send('!buy k');
-            console.log('✅ Sent !buy k');
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await targetChannel.send('!dep all');
-            console.log('✅ Sent !dep all for the last time');
         }
+
+        // After sending the rob command and responses, reset the targetID
+        targetID = null;  // This ensures the person is no longer targeted after the rob command is executed.
+        console.log(`✅ Target ID ${targetID} reset after rob execution.`);
+        
+        // Informing the admin via DM
+        await client.users.cache.get(adminIDs[0])?.send(`✅ !rob executed successfully against ${message.author.tag}`);
     } catch (error) {
         console.error('❌ Error during execution:', error);
     } finally {
