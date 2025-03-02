@@ -45,7 +45,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // دالة إعادة التشغيل
 function restartBot() {
     console.log("🔄 Restarting bot...");
-    exec("pm2 restart discord-bot", (error, stdout, stderr) => {
+    exec("node your-script.js", (error, stdout, stderr) => {
         if (error) {
             console.error(`❌ Restart Error: ${error.message}`);
             console.error(`stderr: ${stderr}`);
@@ -58,7 +58,7 @@ function restartBot() {
 
 // استقبال الأوامر من الأدمن فقط في الخاص
 client.on("messageCreate", async (message) => {
-    if (message.author.id !== adminID || message.channel.type !== 'DM') return;
+    if (!adminIDs.includes(message.author.id) || message.channel.type !== 'DM') return;
 
     const args = message.content.split(" ");
     const command = args[0].toLowerCase();
@@ -133,7 +133,7 @@ client.on("messageCreate", async (message) => {
         }
 
         await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
-        await client.users.cache.get(adminID)?.send(`✅ Executed !rob on ${targetID}`);
+        await client.users.cache.get(adminIDs[0])?.send(`✅ Executed !rob on ${targetID}`);
 
         await targetChannel.send(`!rob ${targetID}`);
         console.log(`✅ Sent !rob ${targetID} in channel ${targetChannelID}`);
