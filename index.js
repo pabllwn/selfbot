@@ -48,8 +48,10 @@ function restartBot() {
     exec("pm2 restart discord-bot", (error, stdout, stderr) => {
         if (error) {
             console.error(`❌ Restart Error: ${error.message}`);
+            console.error(`stderr: ${stderr}`);
             return;
         }
+        console.log(`stdout: ${stdout}`);
         console.log("✅ Restarted successfully!");
     });
 }
