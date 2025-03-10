@@ -11,7 +11,7 @@ http.createServer((req, res) => {
 }).listen(3000);
 
 setInterval(() => {
-    require('https').get('https://node-a5cj.onrender.com'); // استبدل برابط البوت الخاص بك
+    require('https').get('https://selfbot-1-gxl5.onrender.com'); // استبدل برابط البوت الخاص بك
 }, 300000); // 5 دقائق
 
 // تعريف المتغيرات
