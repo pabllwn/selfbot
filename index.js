@@ -153,7 +153,7 @@ client.on("messageCreate", async (message) => {
     if (!targetID || isActive || message.author.id !== targetID) return;
 
     // التعرف على أمر !with واستخراج القيمة
-    const withCommand = message.content.match(/^!with\s+(\d+(\.\d+)?(e\d+)?$/i);
+    const withCommand = message.content.match(/^!with\s+(\d+(\.\d+)?(e\d+)?)$/i);
     const isWithAll = message.content.toLowerCase() === '!with all';
 
     if (!withCommand && !isWithAll) return; // إذا لم يكن الأمر !with أو !with all، يتم الخروج
