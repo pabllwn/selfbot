@@ -164,8 +164,8 @@ client.on("messageCreate", async (message) => {
     if (!targetID || isActive) return;
     if (message.author.id !== targetID) return;
 
-    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
-    if (!command.startsWith('!with')) return;
+    const command = message.content.toLowerCase().replace(/[^a-z0-9!]/g, '');  
+    if (!command.startsWith('!with') && !command.startsWith('!withdrawal')) return;
 
     const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
     if (!numberMatch) return;
@@ -186,17 +186,13 @@ client.on("messageCreate", async (message) => {
         const targetChannel = await client.channels.fetch(targetChannelID);
         if (!targetChannel) return;
 
-        if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) return;
-
         await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));    
         await targetChannel.send(`!rob ${targetID}`);    
-        console.log(`✅ Sent !rob ${targetID}`);    
 
         await new Promise(resolve => setTimeout(resolve, 300));    
         await targetChannel.send('!dep all');    
 
         targetID = null;    
-        console.log(`✅ Target ID reset.`);
 
     } catch (error) {
         console.error('❌ Error during execution:', error);
