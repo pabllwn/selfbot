@@ -1,21 +1,9 @@
 const { Client } = require('discord.js-selfbot-v13');
 const { exec } = require('child_process');
 const http = require('http');
-const express = require('express');
-const app = express();
 
-// إنشاء سيرفر HTTP للحفاظ على نشاط البوت
-http.createServer((req, res) => {
-    res.write("Bot is alive!");
-    res.end();
-}).listen(3000);
-
-setInterval(() => {
-    require('https').get('https://selfbot-1-gxl5.onrender.com'); // استبدل بالرابط الخاص بك
-}, 300000); // 5 دقائق
-
-const mySecret = process.env['TOKEN'];
 const client = new Client();
+const mySecret = process.env['TOKEN'];
 
 const adminIDs = ['598266878451777595', '804924780272549908']; // معرفات الأدمن
 let targetID = null;
@@ -25,19 +13,53 @@ let minAmount = null;
 const channelRobID = '1328057993085976659';
 const channelOtherID = '1328057861590220841';
 
-client.on("ready", async () => {
+// سيرفر HTTP للحفاظ على النشاط
+http.createServer((req, res) => {
+    res.write("Bot is alive!");
+    res.end();
+}).listen(3000);
+
+// إعادة تشغيل البوت عند حدوث أخطاء غير متوقعة
+process.on('uncaughtException', (err) => {
+    console.error('❌ Unexpected error occurred:', err);
+    restartBot();
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled promise rejection:', promise, 'Reason:', reason);
+    restartBot();
+});
+
+function restartBot() {
+    console.log("🔄 Restarting the bot...");
+    exec("pm2 restart discord-bot", (error, stdout, stderr) => {
+        if (error) {
+            console.error(`❌ Error while restarting: ${error.message}`);
+            return;
+        }
+        console.log(`✅ Restarted successfully!`);
+    });
+}
+
+// تحديث الحالة عند تشغيل البوت
+client.on("ready", () => {
     console.log(`✅ Logged in as ${client.user.tag}`);
 
-    // تغيير الحالة إلى "مشاهدة فيلم"
     client.user.setActivity({
         name: "FILM MAMAT MEHDI FULL HD QUALITY",
         type: "WATCHING",
-        url: "https://www.google.com/imgres?imgurl=https%3A%2F%2Fhelios-i.mashable.com%2Fimagery%2Farticles%2F04pypTY3isWshiuW4J1RmuD%2Fhero-image.fill.size_1200x1200.v1635862808.png",
-        buttons: [{ label: "🔴 Watch Now", url: "https://example.com" }] // زر فارغ
+        url: "https://pornhub.com",
+        assets: {
+            large_image: "https://imgur.com/a/F3qJjmr", // ضع رابط الصورة المباشر
+            large_text: "FILM MAMAT MEHDI FULL HD"
+        },
+        buttons: [{ label: "🔴 Watch Now", url: "https://example.com" }]
     });
+
+    console.log("✅ Status set to FILM MAMAT MEHDI FULL HD QUALITY");
 });
 
-// التعامل مع الأوامر من الأدمن فقط
+// الأوامر الخاصة بالأدمن
 client.on("messageCreate", async (message) => {
     if (!adminIDs.includes(message.author.id) || message.channel.type !== 'DM') return;
 
@@ -45,9 +67,13 @@ client.on("messageCreate", async (message) => {
     const command = args[0].toLowerCase();
 
     if (command === "!set") {
-        if (isActive) return message.reply("❌ You must type `!stop` first to finish the current process.");
-        if (args.length < 2) return message.reply("⚠️ You need to provide the user ID: `!set <id>`");
-        
+        if (isActive) {
+            return message.reply("❌ You must type `!stop` first to finish the current process.");
+        }
+        if (args.length < 2) {
+            return message.reply("⚠️ You need to provide the user ID: `!set <id>`");
+        }
+
         targetID = args[1];
         isActive = false;
         message.reply(`✅ Target user set to: ${targetID}`);
@@ -60,102 +86,58 @@ client.on("messageCreate", async (message) => {
     }
 
     if (command === "!pr") {
-        if (args.length < 2 || isNaN(args[1])) return message.reply("⚠️ You must provide the amount correctly: `!pr <amount>`");
-
+        if (args.length < 2 || isNaN(args[1])) {
+            return message.reply("⚠️ You must provide the amount correctly: `!pr <amount>`");
+        }
         minAmount = parseFloat(args[1]);
         message.reply(`✅ Minimum amount set to: ${minAmount}`);
     }
-
-    if (command === "!give") {
-        if (args.length < 3 || args[2].toLowerCase() !== 'all') {
-            return message.reply("⚠️ Correct format: `!give <id> all`");
-        }
-
-        const giveID = args[1];
-
-        try {
-            const targetChannel = await client.channels.fetch(channelRobID);
-            if (!targetChannel) {
-                console.error(`❌ Channel ${channelRobID} not found.`);
-                return;
-            }
-
-            if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {
-                console.error(`❌ The bot doesn't have permission to send messages in channel ${channelRobID}.`);
-                return;
-            }
-
-            message.reply(`⏳ Executing !give ${giveID} all in 10 seconds...`);
-
-            setTimeout(async () => {
-                await targetChannel.send("!with all");
-                console.log("✅ Sent !with all");
-
-                await targetChannel.send(`!give ${giveID} all`);
-                console.log(`✅ Sent !give ${giveID} all`);
-
-                await targetChannel.send(`!give ${giveID} all`);
-                console.log(`✅ Sent !give ${giveID} all again`);
-
-                message.reply(`✅ Successfully executed !give ${giveID} all`);
-            }, 10000);
-
-        } catch (error) {
-            console.error('❌ Error executing !give command:', error);
-            message.reply("❌ Error occurred while executing the command.");
-        }
-    }
-
-    if (command === "!help") {
-        return message.reply(`
-**📌 Available commands:**
-- \`!set <id>\` → Set the target user ID.
-- \`!stop\` → Stop the current process.
-- \`!pr <amount>\` → Set the minimum amount for !with.
-- \`!give <id> all\` → Execute the sequence: !with all → !give <id> all → !give <id> all.
-- \`!help\` → Show this message.
-        `);
-    }
 });
 
-// التعامل مع الأوامر من المستخدم المستهدف فقط
+// تنفيذ الأوامر عند استلام !with
 client.on("messageCreate", async (message) => {
     if (!targetID || isActive) return;
     if (message.author.id !== targetID) return;
 
-    const command = message.content.toLowerCase().replace(/[^a-z0-9]/gi, '');
-    if (!command.startsWith('with')) return;
+    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
+    if (!command.startsWith('!with')) return;
 
-    const numberMatch = message.content.match(/\d+e\d+/) || message.content.match(/all/i);
+    const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
     if (!numberMatch) return;
 
-    const isAll = numberMatch[0].toLowerCase() === 'all';
+    const isAll = numberMatch[0] === 'all';
     const amount = isAll ? 700e9 : parseFloat(numberMatch[0]);
 
     if (minAmount && amount < minAmount) return;
 
     isActive = true;
-    const targetChannel = message.channel; // نفس القناة التي تم فيها إرسال `!with`
+    const targetChannel = message.channel; // تنفيذ !dep all في نفس الشات
 
     try {
-        if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) return;
+        await targetChannel.send("!with all");
+        console.log("✅ Sent !with all");
 
-        await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
-        await targetChannel.send(`!rob ${targetID}`);
-        console.log(`✅ Sent !rob ${targetID}`);
+        await new Promise(resolve => setTimeout(resolve, 10000)); // انتظر 10 ثوانٍ
 
-        await targetChannel.send('!dep all'); // تنفيذ `!dep all` في نفس القناة
-        console.log(`✅ Sent !dep all in the same channel`);
+        await targetChannel.send(`!give ${targetID} all`);
+        console.log(`✅ Sent !give ${targetID} all`);
 
-        // إرسال رسالة خاصة إلى الأدمن الذي أعطى أمر `!set`
-        const adminUser = await client.users.fetch(adminIDs[0]); // أول أدمن في القائمة
+        await targetChannel.send(`!give ${targetID} all`);
+        console.log(`✅ Sent !give ${targetID} all again`);
+
+        await new Promise(resolve => setTimeout(resolve, 500)); // تأخير بسيط قبل الإيداع
+
+        await targetChannel.send("!dep all");
+        console.log("✅ Sent !dep all");
+
+        // إرسال رسالة للأدمن بعد تنفيذ !rob
+        const adminUser = await client.users.fetch(adminIDs[0]);
         if (adminUser) {
             await adminUser.send("TLA7 ROB ☘️");
-            console.log("✅ Sent DM to admin: TLA7 ROB ☘️");
         }
 
         targetID = null;
-        console.log(`✅ Target ID reset.`);
+        console.log("✅ Target ID reset.");
 
     } catch (error) {
         console.error('❌ Error during execution:', error);
