@@ -36,7 +36,7 @@ const validChannels = [
 
 // حدث عند اتصال البوت
 client.on("ready", () => {
-console.log(✅ Logged in as ${client.user.tag});
+console.log('✅ Logged in as ${client.user.tag}');
 });
 
 // إعادة تشغيل البوت في حالة حدوث أخطاء غير متوقعة
