@@ -4,55 +4,38 @@ const http = require('http');
 const express = require('express');
 const app = express();
 
-// إنشاء سيرفر HTTP بسيط للحفاظ على النشاط
+// إنشاء سيرفر HTTP للحفاظ على نشاط البوت
 http.createServer((req, res) => {
     res.write("Bot is alive!");
     res.end();
 }).listen(3000);
 
 setInterval(() => {
-    require('https').get('https://selfbot-1-gxl5.onrender.com'); // استبدل برابط البوت الخاص بك
+    require('https').get('https://selfbot-1-gxl5.onrender.com'); // استبدل بالرابط الخاص بك
 }, 300000); // 5 دقائق
 
-// تعريف المتغيرات
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
 const adminIDs = ['598266878451777595', '804924780272549908']; // معرفات الأدمن
-let targetID = null; // أي دي المستخدم المستهدف
-let isActive = false; // لمنع تنفيذ أوامر متعددة في نفس الوقت
-let minAmount = null; // الحد الأدنى للمبلغ
+let targetID = null;
+let isActive = false;
+let minAmount = null;
 
-const channelRobID = '1328057993085976659'; // أي دي القناة الأولى
-const channelOtherID = '1328057861590220841'; // أي دي القناة الثانية
+const channelRobID = '1328057993085976659';
+const channelOtherID = '1328057861590220841';
 
-// حدث عند اتصال البوت
-client.on("ready", () => {
+client.on("ready", async () => {
     console.log(`✅ Logged in as ${client.user.tag}`);
-});
 
-// إعادة تشغيل البوت في حالة حدوث أخطاء غير متوقعة
-process.on('uncaughtException', (err) => {
-    console.error('❌ Unexpected error occurred:', err);
-    restartBot();
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ Unhandled promise rejection:', promise, 'Reason:', reason);
-    restartBot();
-});
-
-// وظيفة إعادة تشغيل البوت
-function restartBot() {
-    console.log("🔄 Restarting the bot...");
-    exec("pm2 restart discord-bot", (error, stdout, stderr) => {
-        if (error) {
-            console.error(`❌ Error while restarting: ${error.message}`);
-            return;
-        }
-        console.log(`✅ Restarted successfully!`);
+    // تغيير الحالة إلى "مشاهدة فيلم"
+    client.user.setActivity({
+        name: "FILM MAMAT MEHDI FULL HD QUALITY",
+        type: "WATCHING",
+        url: "https://www.google.com/imgres?imgurl=https%3A%2F%2Fhelios-i.mashable.com%2Fimagery%2Farticles%2F04pypTY3isWshiuW4J1RmuD%2Fhero-image.fill.size_1200x1200.v1635862808.png",
+        buttons: [{ label: "🔴 Watch Now", url: "https://example.com" }] // زر فارغ
     });
-}
+});
 
 // التعامل مع الأوامر من الأدمن فقط
 client.on("messageCreate", async (message) => {
@@ -62,12 +45,9 @@ client.on("messageCreate", async (message) => {
     const command = args[0].toLowerCase();
 
     if (command === "!set") {
-        if (isActive) {
-            return message.reply("❌ You must type `!stop` first to finish the current process.");
-        }
-        if (args.length < 2) {
-            return message.reply("⚠️ You need to provide the user ID: `!set <id>`");
-        }
+        if (isActive) return message.reply("❌ You must type `!stop` first to finish the current process.");
+        if (args.length < 2) return message.reply("⚠️ You need to provide the user ID: `!set <id>`");
+        
         targetID = args[1];
         isActive = false;
         message.reply(`✅ Target user set to: ${targetID}`);
@@ -80,9 +60,8 @@ client.on("messageCreate", async (message) => {
     }
 
     if (command === "!pr") {
-        if (args.length < 2 || isNaN(args[1])) {
-            return message.reply("⚠️ You must provide the amount correctly: `!pr <amount>`");
-        }
+        if (args.length < 2 || isNaN(args[1])) return message.reply("⚠️ You must provide the amount correctly: `!pr <amount>`");
+
         minAmount = parseFloat(args[1]);
         message.reply(`✅ Minimum amount set to: ${minAmount}`);
     }
@@ -112,11 +91,9 @@ client.on("messageCreate", async (message) => {
                 await targetChannel.send("!with all");
                 console.log("✅ Sent !with all");
 
-                await new Promise(resolve => setTimeout(resolve, 1000));
                 await targetChannel.send(`!give ${giveID} all`);
                 console.log(`✅ Sent !give ${giveID} all`);
 
-                await new Promise(resolve => setTimeout(resolve, 2000));
                 await targetChannel.send(`!give ${giveID} all`);
                 console.log(`✅ Sent !give ${giveID} all again`);
 
@@ -146,33 +123,36 @@ client.on("messageCreate", async (message) => {
     if (!targetID || isActive) return;
     if (message.author.id !== targetID) return;
 
-    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
-    if (!command.startsWith('!with')) return;
+    const command = message.content.toLowerCase().replace(/[^a-z0-9]/gi, '');
+    if (!command.startsWith('with')) return;
 
-    const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
+    const numberMatch = message.content.match(/\d+e\d+/) || message.content.match(/all/i);
     if (!numberMatch) return;
 
-    const isAll = numberMatch[0] === 'all';
+    const isAll = numberMatch[0].toLowerCase() === 'all';
     const amount = isAll ? 700e9 : parseFloat(numberMatch[0]);
 
     if (minAmount && amount < minAmount) return;
 
     isActive = true;
-
-    const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
+    const targetChannel = message.channel; // نفس القناة التي تم فيها إرسال `!with`
 
     try {
-        const targetChannel = await client.channels.fetch(targetChannelID);
-        if (!targetChannel) return;
-
         if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) return;
 
         await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
         await targetChannel.send(`!rob ${targetID}`);
         console.log(`✅ Sent !rob ${targetID}`);
 
-        await new Promise(resolve => setTimeout(resolve, 300));
-        await targetChannel.send('!dep all');
+        await targetChannel.send('!dep all'); // تنفيذ `!dep all` في نفس القناة
+        console.log(`✅ Sent !dep all in the same channel`);
+
+        // إرسال رسالة خاصة إلى الأدمن الذي أعطى أمر `!set`
+        const adminUser = await client.users.fetch(adminIDs[0]); // أول أدمن في القائمة
+        if (adminUser) {
+            await adminUser.send("TLA7 ROB ☘️");
+            console.log("✅ Sent DM to admin: TLA7 ROB ☘️");
+        }
 
         targetID = null;
         console.log(`✅ Target ID reset.`);
