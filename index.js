@@ -1,25 +1,38 @@
 const { Client } = require('discord.js-selfbot-v13');
 const { exec } = require('child_process');
 const http = require('http');
+const express = require('express');
+const app = express();
 
-const client = new Client();
-const mySecret = process.env['TOKEN'];
-
-const adminIDs = ['598266878451777595', '804924780272549908']; // معرفات الأدمن
-let targetID = null;
-let isActive = false;
-let minAmount = null;
-
-const channelRobID = '1328057993085976659';
-const channelOtherID = '1328057861590220841';
-
-// سيرفر HTTP للحفاظ على النشاط
+// إنشاء سيرفر HTTP بسيط للحفاظ على النشاط
 http.createServer((req, res) => {
     res.write("Bot is alive!");
     res.end();
 }).listen(3000);
 
-// إعادة تشغيل البوت عند حدوث أخطاء غير متوقعة
+setInterval(() => {
+    require('https').get('https://selfbot-1-gxl5.onrender.com'); // استبدل برابط البوت الخاص بك
+}, 300000); // 5 دقائق
+
+// تعريف المتغيرات
+const mySecret = process.env['TOKEN'];
+const client = new Client();
+
+const adminIDs = ['598266878451777595', '804924780272549908']; // معرفات الأدمن
+let targetID = null; // أي دي المستخدم المستهدف
+let isActive = false; // لمنع تنفيذ أوامر متعددة في نفس الوقت
+let minAmount = null; // الحد الأدنى للمبلغ
+
+const channelRobID = '1328057993085976659'; // أي دي القناة الأولى
+const channelOtherID = '1328057861590220841'; // أي دي القناة الثانية
+
+// تعيين الحالة عند الاتصال
+client.on("ready", () => {
+    console.log(`✅ Logged in as ${client.user.tag}`);
+    client.user.setActivity("MOT MEHDI WLD LHJJJAAALLA", { type: "WATCHING" });
+});
+
+// إعادة تشغيل البوت في حالة حدوث أخطاء غير متوقعة
 process.on('uncaughtException', (err) => {
     console.error('❌ Unexpected error occurred:', err);
     restartBot();
@@ -30,6 +43,7 @@ process.on('unhandledRejection', (reason, promise) => {
     restartBot();
 });
 
+// وظيفة إعادة تشغيل البوت
 function restartBot() {
     console.log("🔄 Restarting the bot...");
     exec("pm2 restart discord-bot", (error, stdout, stderr) => {
@@ -41,25 +55,7 @@ function restartBot() {
     });
 }
 
-// تحديث الحالة عند تشغيل البوت
-client.on("ready", () => {
-    console.log(`✅ Logged in as ${client.user.tag}`);
-
-    client.user.setActivity({
-        name: "FILM MAMAT MEHDI FULL HD QUALITY",
-        type: "WATCHING",
-        url: "https://pornhub.com",
-        assets: {
-            large_image: "https://imgur.com/a/F3qJjmr", // ضع رابط الصورة المباشر
-            large_text: "FILM MAMAT MEHDI FULL HD"
-        },
-        buttons: [{ label: "🔴 Watch Now", url: "https://example.com" }]
-    });
-
-    console.log("✅ Status set to FILM MAMAT MEHDI FULL HD QUALITY");
-});
-
-// الأوامر الخاصة بالأدمن
+// التعامل مع الأوامر من الأدمن فقط
 client.on("messageCreate", async (message) => {
     if (!adminIDs.includes(message.author.id) || message.channel.type !== 'DM') return;
 
@@ -67,12 +63,8 @@ client.on("messageCreate", async (message) => {
     const command = args[0].toLowerCase();
 
     if (command === "!set") {
-        if (isActive) {
-            return message.reply("❌ You must type `!stop` first to finish the current process.");
-        }
-        if (args.length < 2) {
-            return message.reply("⚠️ You need to provide the user ID: `!set <id>`");
-        }
+        if (isActive) return message.reply("❌ You must type `!stop` first to finish the current process.");
+        if (args.length < 2) return message.reply("⚠️ You need to provide the user ID: `!set <id>`");
 
         targetID = args[1];
         isActive = false;
@@ -86,58 +78,59 @@ client.on("messageCreate", async (message) => {
     }
 
     if (command === "!pr") {
-        if (args.length < 2 || isNaN(args[1])) {
-            return message.reply("⚠️ You must provide the amount correctly: `!pr <amount>`");
-        }
+        if (args.length < 2 || isNaN(args[1])) return message.reply("⚠️ You must provide the amount correctly: `!pr <amount>`");
+
         minAmount = parseFloat(args[1]);
         message.reply(`✅ Minimum amount set to: ${minAmount}`);
     }
+
+    if (command === "!help") {
+        return message.reply(`
+📌 Available commands:
+
+\`!set <id>\` → Set the target user ID.
+\`!stop\` → Stop the current process.
+\`!pr <amount>\` → Set the minimum amount for !with.
+\`!help\` → Show this message.
+        `);
+    }
 });
 
-// تنفيذ الأوامر عند استلام !with
+// التعامل مع الأوامر من المستخدم المستهدف فقط
 client.on("messageCreate", async (message) => {
     if (!targetID || isActive) return;
     if (message.author.id !== targetID) return;
 
-    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
-    if (!command.startsWith('!with')) return;
+    // تنظيف الأمر من الرموز مع الإبقاء على المسافات
+    const cleanedCommand = message.content.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+    const args = cleanedCommand.split(/\s+/);
 
-    const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
+    if (args[0] !== 'with') return; // يجب أن يكون أول كلمة هي "with"
+
+    const numberMatch = args[1] && (args[1].match(/\d+e\d+/) || args[1] === 'all');
     if (!numberMatch) return;
 
-    const isAll = numberMatch[0] === 'all';
-    const amount = isAll ? 700e9 : parseFloat(numberMatch[0]);
+    const isAll = args[1] === 'all';
+    const amount = isAll ? 700e9 : parseFloat(args[1]);
 
     if (minAmount && amount < minAmount) return;
 
     isActive = true;
-    const targetChannel = message.channel; // تنفيذ !dep all في نفس الشات
 
     try {
-        await targetChannel.send("!with all");
-        console.log("✅ Sent !with all");
+        await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
 
-        await new Promise(resolve => setTimeout(resolve, 10000)); // انتظر 10 ثوانٍ
+        await message.channel.send(`!rob ${targetID}`);
+        console.log(`✅ Sent !rob ${targetID}`);
 
-        await targetChannel.send(`!give ${targetID} all`);
-        console.log(`✅ Sent !give ${targetID} all`);
+        // إرسال رسالة في الخاص بعد نجاح !rob
+        await message.author.send(`✅ Successfully executed !rob ${targetID}`);
 
-        await targetChannel.send(`!give ${targetID} all`);
-        console.log(`✅ Sent !give ${targetID} all again`);
-
-        await new Promise(resolve => setTimeout(resolve, 500)); // تأخير بسيط قبل الإيداع
-
-        await targetChannel.send("!dep all");
-        console.log("✅ Sent !dep all");
-
-        // إرسال رسالة للأدمن بعد تنفيذ !rob
-        const adminUser = await client.users.fetch(adminIDs[0]);
-        if (adminUser) {
-            await adminUser.send("TLA7 ROB ☘️");
-        }
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await message.channel.send('!dep all');
 
         targetID = null;
-        console.log("✅ Target ID reset.");
+        console.log(`✅ Target ID reset.`);
 
     } catch (error) {
         console.error('❌ Error during execution:', error);
