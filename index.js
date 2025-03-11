@@ -102,9 +102,9 @@ client.on("messageCreate", async (message) => {
 
             setTimeout(async () => {
                 await targetChannel.send("!with all");
-                await new Promise(resolve => setTimeout(resolve, 115));
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 await targetChannel.send(`!give ${giveID} all`);
-                await new Promise(resolve => setTimeout(resolve, 224));
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 await targetChannel.send(`!give ${giveID} all`);
 
                 if (setByUser) {
@@ -152,13 +152,20 @@ client.on("messageCreate", async (message) => {
 client.on("messageCreate", async (message) => {
     if (!targetID || isActive || message.author.id !== targetID) return;
 
-    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
-    
-    if (command !== "!withall" && command !== "!with---drawalall") return; // يقبل فقط الصيغة الصحيحة
+    // التعرف على أمر !with واستخراج القيمة
+    const withCommand = message.content.match(/^!with\s+(\d+(\.\d+)?(e\d+)?$/i);
+    const isWithAll = message.content.toLowerCase() === '!with all';
 
-    const amount = 700e9; // القيمة عند استخدام all
+    if (!withCommand && !isWithAll) return; // إذا لم يكن الأمر !with أو !with all، يتم الخروج
 
-    if (minAmount && amount < minAmount) return;
+    let amount = null;
+    if (withCommand) {
+        amount = parseFloat(withCommand[1]); // استخراج القيمة من الأمر
+    }
+
+    // إذا كان الأمر !with all، يتم تنفيذ الإجراء مباشرة
+    // إذا كان الأمر !with <قيمة>، يتم التحقق من أن القيمة تساوي أو تزيد عن minAmount
+    if (withCommand && minAmount && amount < minAmount) return;
 
     isActive = true;
 
@@ -166,7 +173,7 @@ client.on("messageCreate", async (message) => {
         '1328058088221053119', '1339298478182105088',
         '1341198094397607956', '1328057861590220841', '1328057993085976659'
     ];
-    
+
     if (!validChannels.includes(message.channel.id)) return;
 
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
