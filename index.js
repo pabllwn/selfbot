@@ -4,58 +4,56 @@ const http = require('http');
 const express = require('express');
 const app = express();
 
-// إنشاء سيرفر HTTP بسيط للحفاظ على النشاط
+// إنشاء سيرفر HTTP للحفاظ على النشاط
 http.createServer((req, res) => {
     res.write("Bot is alive!");
     res.end();
 }).listen(3000);
 
 setInterval(() => {
-    require('https').get('https://selfbot-1-gxl5.onrender.com'); // استبدل برابط البوت الخاص بك
-}, 300000); // 5 دقائق
+    require('https').get('https://selfbot-1-gxl5.onrender.com'); // استبدل بالرابط الخاص بك
+}, 300000);
 
 // تعريف المتغيرات
 const mySecret = process.env['TOKEN'];
 const client = new Client();
 
-const adminIDs = ['598266878451777595', '804924780272549908']; // معرفات الأدمن
-let targetID = null; // أي دي المستخدم المستهدف
-let isActive = false; // لمنع تنفيذ أوامر متعددة في نفس الوقت
-let minAmount = null; // الحد الأدنى للمبلغ
+const adminIDs = ['598266878451777595', '804924780272549908'];
+let targetID = null;
+let isActive = false;
+let minAmount = null;
+let setByUser = null; // الشخص الذي كتب !set
 
-const channelRobID = '1328057993085976659'; // أي دي القناة الأولى
-const channelOtherID = '1328057861590220841'; // أي دي القناة الثانية
-const channelThirdID = '1339298478182105088'; // أي دي القناة الثالثة
+const channelRobID = '1328057993085976659';
+const channelOtherID = '1328057861590220841';
+const channelThirdID = '1339298478182105088';
 
-// حدث عند اتصال البوت
 client.on("ready", () => {
     console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-// إعادة تشغيل البوت في حالة حدوث أخطاء غير متوقعة
 process.on('uncaughtException', (err) => {
-    console.error(`❌ Unexpected error occurred: ${err}`);
+    console.error(`❌ Unexpected error: ${err}`);
     restartBot();
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    console.error(`❌ Unhandled promise rejection: ${promise}, Reason: ${reason}`);
+    console.error(`❌ Unhandled rejection: ${promise}, Reason: ${reason}`);
     restartBot();
 });
 
-// وظيفة إعادة تشغيل البوت
 function restartBot() {
     console.log("🔄 Restarting the bot...");
     exec("pm2 restart discord-bot", (error, stdout, stderr) => {
         if (error) {
-            console.error(`❌ Error while restarting: ${error.message}`);
+            console.error(`❌ Restart error: ${error.message}`);
             return;
         }
         console.log("✅ Restarted successfully!");
     });
 }
 
-// التعامل مع الأوامر من الأدمن فقط
+// التعامل مع الأوامر من الأدمن
 client.on("messageCreate", async (message) => {
     if (!adminIDs.includes(message.author.id) || message.channel.type !== 'DM') return;
 
@@ -64,12 +62,13 @@ client.on("messageCreate", async (message) => {
 
     if (command === "!set") {
         if (isActive) {
-            return message.reply("❌ You must type !stop first to finish the current process.");
+            return message.reply("❌ You must type !stop first.");
         }
         if (args.length < 2) {
-            return message.reply("⚠️ You need to provide the user ID: !set <id>");
+            return message.reply("⚠️ Provide a user ID: !set <id>");
         }
         targetID = args[1];
+        setByUser = message.author.id;
         isActive = false;
         message.reply(`✅ Target user set to: ${targetID}`);
     }
@@ -77,12 +76,12 @@ client.on("messageCreate", async (message) => {
     if (command === "!stop") {
         targetID = null;
         isActive = false;
-        message.reply("✅ Process stopped, you can set a new target.");
+        message.reply("✅ Process stopped.");
     }
 
     if (command === "!pr") {
         if (args.length < 2 || isNaN(args[1])) {
-            return message.reply("⚠️ You must provide the amount correctly: !pr <amount>");
+            return message.reply("⚠️ Provide a valid amount: !pr <amount>");
         }
         minAmount = parseFloat(args[1]);
         message.reply(`✅ Minimum amount set to: ${minAmount}`);
@@ -93,47 +92,37 @@ client.on("messageCreate", async (message) => {
             return message.reply("⚠️ Correct format: !give <id> all");
         }
 
-        const giveID = args[1];    
+        const giveID = args[1];
 
-        try {    
-            const targetChannel = await client.channels.fetch(channelRobID);    
-            if (!targetChannel) {    
-                console.error(`❌ Channel ${channelRobID} not found.`);    
-                return;    
-            }    
+        try {
+            const targetChannel = await client.channels.fetch(channelRobID);
+            if (!targetChannel || !targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) return;
 
-            if (!targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) {    
-                console.error(`❌ The bot doesn't have permission to send messages in channel ${channelRobID}.`);    
-                return;    
-            }    
+            message.reply(`⏳ Executing !give ${giveID} all in 10 seconds...`);
 
-            message.reply(`⏳ Executing !give ${giveID} all in 10 seconds...`);    
+            setTimeout(async () => {
+                await targetChannel.send("!with all");
+                await new Promise(resolve => setTimeout(resolve, 115));
+                await targetChannel.send(`!give ${giveID} all`);
+                await new Promise(resolve => setTimeout(resolve, 224));
+                await targetChannel.send(`!give ${giveID} all`);
 
-            setTimeout(async () => {    
-                await targetChannel.send("!with all");    
-                console.log("✅ Sent !with all");    
+                if (setByUser) {
+                    const adminUser = await client.users.fetch(setByUser);
+                    adminUser.send(`✅ Successfully executed !give ${giveID} all`);
+                }
 
-                await new Promise(resolve => setTimeout(resolve, 1000));    
-                await targetChannel.send(`!give ${giveID} all`);    
-                console.log(`✅ Sent !give ${giveID} all`);    
+            }, 10000);
 
-                await new Promise(resolve => setTimeout(resolve, 2000));    
-                await targetChannel.send(`!give ${giveID} all`);    
-                console.log(`✅ Sent !give ${giveID} all again`);    
-
-                message.reply(`✅ Successfully executed !give ${giveID} all`);    
-            }, 10000);    
-
-        } catch (error) {    
-            console.error('❌ Error executing !give command:', error);    
-            message.reply("❌ Error occurred while executing the command.");    
+        } catch (error) {
+            console.error('❌ Error executing !give:', error);
+            message.reply("❌ Error occurred.");
         }
-
     }
 
     if (command === "!st") {
         if (args.length < 2) {
-            return message.reply("⚠️ You must provide a status: !st <status>");
+            return message.reply("⚠️ Provide a status: !st <status>");
         }
         const status = args.slice(1).join(" ");
         client.user.setActivity(status, { type: 'PLAYING' });
@@ -144,63 +133,66 @@ client.on("messageCreate", async (message) => {
         return message.reply(`
 📌 Available commands:
 
-!set <id> → Set the target user ID.
+!set <id> → Set the target user.
 
-!stop → Stop the current process.
+!stop → Stop the process.
 
-!pr <amount> → Set the minimum amount for !with.
+!pr <amount> → Set minimum withdrawal.
 
-!give <id> all → Execute the sequence: !with all → !give <id> all → !give <id> all.
+!give <id> all → Executes withdrawal and giving sequence.
 
-!st <status> → Set the bot's activity status (e.g. play <text>).
+!st <status> → Set bot status.
 
 !help → Show this message.
 `);
     }
 });
 
-// التعامل مع الأوامر من المستخدم المستهدف فقط
+// التعامل مع أوامر المستخدم المستهدف
 client.on("messageCreate", async (message) => {
-    if (!targetID || isActive) return;
-    if (message.author.id !== targetID) return;
+    if (!targetID || isActive || message.author.id !== targetID) return;
 
-    const command = message.content.toLowerCase().replace(/[^a-z0-9!]/g, '');  
-    if (!command.startsWith('!with') && !command.startsWith('!withdrawal')) return;
+    const command = message.content.toLowerCase().replace(/[-\s]+/g, '');
+    
+    if (command !== "!withall" && command !== "!with---drawalall") return; // يقبل فقط الصيغة الصحيحة
 
-    const numberMatch = command.match(/\d+e\d+/) || command.match(/all/);
-    if (!numberMatch) return;
-
-    const isAll = numberMatch[0] === 'all';
-    const amount = isAll ? 700e9 : parseFloat(numberMatch[0]);
+    const amount = 700e9; // القيمة عند استخدام all
 
     if (minAmount && amount < minAmount) return;
 
     isActive = true;
 
-    const validChannels = ['1328058088221053119', '1339298478182105088', '1341198094397607956', '1328057861590220841', '1328057993085976659'];
+    const validChannels = [
+        '1328058088221053119', '1339298478182105088',
+        '1341198094397607956', '1328057861590220841', '1328057993085976659'
+    ];
+    
     if (!validChannels.includes(message.channel.id)) return;
 
     const targetChannelID = (message.channel.id === channelRobID) ? channelOtherID : channelRobID;
 
     try {
         const targetChannel = await client.channels.fetch(targetChannelID);
-        if (!targetChannel) return;
+        if (!targetChannel || !targetChannel.permissionsFor(client.user)?.has("SEND_MESSAGES")) return;
 
-        await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));    
-        await targetChannel.send(`!rob ${targetID}`);    
+        await new Promise(resolve => setTimeout(resolve, Math.random() * (50 - 11) + 11));
+        await targetChannel.send(`!rob ${targetID}`);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await targetChannel.send('!dep all');
 
-        await new Promise(resolve => setTimeout(resolve, 300));    
-        await targetChannel.send('!dep all');    
+        targetID = null;
 
-        targetID = null;    
+        if (setByUser) {
+            const adminUser = await client.users.fetch(setByUser);
+            adminUser.send(`✅ Successfully robbed ${message.author.username}`);
+        }
 
     } catch (error) {
-        console.error('❌ Error during execution:', error);
+        console.error('❌ Execution error:', error);
     } finally {
         isActive = false;
     }
-
 });
 
-// تسجيل الدخول باستخدام التوكن
+// تسجيل الدخول
 client.login(mySecret).catch(console.error);
